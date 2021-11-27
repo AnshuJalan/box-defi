@@ -1,0 +1,13 @@
+###########
+# Box Pool
+###########
+
+INSUFFICIENT_TOKENS_PROVIDED = "INSUFFICIENT_TOKENS_PROVIDED"
+
+
+##########
+# Generic
+##########
+
+NOT_AUTHORISED = "NOT_AUTHORISED"
+INVALID_STATE = "INVALID_STATE"

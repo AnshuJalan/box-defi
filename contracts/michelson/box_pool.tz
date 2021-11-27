@@ -1,0 +1,400 @@
+parameter (or (or (nat %lock_tokens) (nat %lock_tokens_callback)) (or (nat %unlock_tokens) (nat %unlock_tokens_callback)));
+storage   (pair (address %admin) (pair (pair %flash_loan_storage (nat %fee) (option %state_buffer (pair (nat %loan_amount) (address %borrower)))) (pair %pool_storage (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))))));
+code
+  {
+    UNPAIR;     # @parameter : @storage
+    IF_LEFT
+      {
+        IF_LEFT
+          {
+            # == lock_tokens ==
+            # sp.verify(params != 0, 'INSUFFICIENT_TOKENS_PROVIDED') # @parameter%lock_tokens : @storage
+            DUP;        # @parameter%lock_tokens : @parameter%lock_tokens : @storage
+            PUSH nat 0; # nat : @parameter%lock_tokens : @parameter%lock_tokens : @storage
+            COMPARE;    # int : @parameter%lock_tokens : @storage
+            NEQ;        # bool : @parameter%lock_tokens : @storage
+            IF
+              {}
+              {
+                PUSH string "INSUFFICIENT_TOKENS_PROVIDED"; # string : @parameter%lock_tokens : @storage
+                FAILWITH;   # FAILED
+              }; # @parameter%lock_tokens : @storage
+            SWAP;       # @storage : @parameter%lock_tokens
+            # self.data.pool_storage.state_buffer = sp.some(sp.record(value = params, sender = sp.sender)) # @storage : @parameter%lock_tokens
+            DUP;        # @storage : @storage : @parameter%lock_tokens
+            GET 4;      # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : @parameter%lock_tokens
+            SENDER;     # @sender : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : @parameter%lock_tokens
+            DIG 3;      # @parameter%lock_tokens : @sender : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage
+            PAIR;       # pair @parameter%lock_tokens @sender : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage
+            SOME;       # option (pair @parameter%lock_tokens @sender) : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage
+            UPDATE 6;   # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage
+            UPDATE 4;   # @storage
+            # sp.transfer((sp.self_address, sp.self_entry_point('lock_tokens_callback')), sp.tez(0), sp.contract(sp.TPair(sp.TAddress, sp.TContract(sp.TNat)), self.data.pool_storage.pool_token_address, entry_point='getBalance').open_some()) # @storage
+            DUP;        # @storage : @storage
+            GET 9;      # address : @storage
+            CONTRACT %getBalance (pair address (contract nat)); # option (contract (pair address (contract nat))) : @storage
+            IF_NONE
+              {
+                PUSH int 88; # int : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : @storage
+            NIL operation; # list operation : @some : @storage
+            SWAP;       # @some : list operation : @storage
+            PUSH mutez 0; # mutez : @some : list operation : @storage
+            SELF %lock_tokens_callback; # @self : mutez : @some : list operation : @storage
+            SELF_ADDRESS; # @self : @self : mutez : @some : list operation : @storage
+            PAIR;       # pair @self @self : mutez : @some : list operation : @storage
+            TRANSFER_TOKENS; # operation : list operation : @storage
+            CONS;       # list operation : @storage
+          }
+          {
+            SWAP;       # @storage : @parameter%lock_tokens_callback
+            # == lock_tokens_callback ==
+            # sp.verify(sp.sender == self.data.pool_storage.pool_token_address, 'NOT_AUTHORISED') # @storage : @parameter%lock_tokens_callback
+            DUP;        # @storage : @storage : @parameter%lock_tokens_callback
+            DUG 2;      # @storage : @parameter%lock_tokens_callback : @storage
+            GET 9;      # address : @parameter%lock_tokens_callback : @storage
+            SENDER;     # @sender : address : @parameter%lock_tokens_callback : @storage
+            COMPARE;    # int : @parameter%lock_tokens_callback : @storage
+            EQ;         # bool : @parameter%lock_tokens_callback : @storage
+            IF
+              {}
+              {
+                PUSH string "NOT_AUTHORISED"; # string : @parameter%lock_tokens_callback : @storage
+                FAILWITH;   # FAILED
+              }; # @parameter%lock_tokens_callback : @storage
+            SWAP;       # @storage : @parameter%lock_tokens_callback
+            # sp.verify(self.data.pool_storage.state_buffer.is_some(), 'INVALID_STATE') # @storage : @parameter%lock_tokens_callback
+            DUP;        # @storage : @storage : @parameter%lock_tokens_callback
+            DUG 2;      # @storage : @parameter%lock_tokens_callback : @storage
+            GET 10;     # option (pair (nat %value) (address %sender)) : @parameter%lock_tokens_callback : @storage
+            IF_NONE
+              {
+                PUSH string "INVALID_STATE"; # string : @parameter%lock_tokens_callback : @storage
+                FAILWITH;   # FAILED
+              }
+              {
+                DROP;       # @parameter%lock_tokens_callback : @storage
+              }; # @parameter%lock_tokens_callback : @storage
+            # num_seed_tokens = sp.local("num_seed_tokens", 0)
+            # if self.data.pool_storage.seed_token_supply == 0: # @parameter%lock_tokens_callback : @storage
+            PUSH nat 0; # nat : @parameter%lock_tokens_callback : @storage
+            DUP 3;      # @storage : nat : @parameter%lock_tokens_callback : @storage
+            GET 7;      # nat : nat : @parameter%lock_tokens_callback : @storage
+            COMPARE;    # int : @parameter%lock_tokens_callback : @storage
+            EQ;         # bool : @parameter%lock_tokens_callback : @storage
+            IF
+              {
+                DROP;       # @storage
+                # num_seed_tokens.value = self.data.pool_storage.state_buffer.open_some().value # @storage
+                DUP;        # @storage : @storage
+                GET 10;     # option (pair (nat %value) (address %sender)) : @storage
+                IF_NONE
+                  {
+                    PUSH int 108; # int : @storage
+                    FAILWITH;   # FAILED
+                  }
+                  {}; # @some : @storage
+                CAR;        # nat : @storage
+              }
+              {
+                SWAP;       # @storage : @parameter%lock_tokens_callback
+                # num_seed_tokens.value = (self.data.pool_storage.state_buffer.open_some().value * self.data.pool_storage.seed_token_supply) // params # @storage : @parameter%lock_tokens_callback
+                DUP;        # @storage : @storage : @parameter%lock_tokens_callback
+                GET 7;      # nat : @storage : @parameter%lock_tokens_callback
+                SWAP;       # @storage : nat : @parameter%lock_tokens_callback
+                DUP;        # @storage : @storage : nat : @parameter%lock_tokens_callback
+                DUG 3;      # @storage : nat : @parameter%lock_tokens_callback : @storage
+                GET 10;     # option (pair (nat %value) (address %sender)) : nat : @parameter%lock_tokens_callback : @storage
+                IF_NONE
+                  {
+                    PUSH int 108; # int : nat : @parameter%lock_tokens_callback : @storage
+                    FAILWITH;   # FAILED
+                  }
+                  {}; # @some : nat : @parameter%lock_tokens_callback : @storage
+                CAR;        # nat : nat : @parameter%lock_tokens_callback : @storage
+                MUL;        # nat : @parameter%lock_tokens_callback : @storage
+                EDIV;       # option (pair nat nat) : @storage
+                IF_NONE
+                  {
+                    PUSH int 115; # int : @storage
+                    FAILWITH;   # FAILED
+                  }
+                  {
+                    CAR;        # nat : @storage
+                  }; # nat : @storage
+              }; # nat : @storage
+            # sp.transfer(sp.record(from_ = self.data.pool_storage.state_buffer.open_some().sender, to_ = sp.self_address, value = self.data.pool_storage.state_buffer.open_some().value), sp.tez(0), sp.contract(sp.TRecord(from_ = sp.TAddress, to_ = sp.TAddress, value = sp.TNat).layout(("from_ as from", ("to_ as to", "value"))), self.data.pool_storage.pool_token_address, entry_point='transfer').open_some()) # nat : @storage
+            NIL operation; # list operation : nat : @storage
+            DUP 3;      # @storage : list operation : nat : @storage
+            GET 9;      # address : list operation : nat : @storage
+            CONTRACT %transfer (pair address (pair address nat)); # option (contract (pair address (pair address nat))) : list operation : nat : @storage
+            IF_NONE
+              {
+                PUSH int 118; # int : list operation : nat : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : list operation : nat : @storage
+            PUSH mutez 0; # mutez : @some : list operation : nat : @storage
+            DUP 5;      # @storage : mutez : @some : list operation : nat : @storage
+            GET 10;     # option (pair (nat %value) (address %sender)) : mutez : @some : list operation : nat : @storage
+            IF_NONE
+              {
+                PUSH int 108; # int : mutez : @some : list operation : nat : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : mutez : @some : list operation : nat : @storage
+            CAR;        # nat : mutez : @some : list operation : nat : @storage
+            SELF_ADDRESS; # @self : nat : mutez : @some : list operation : nat : @storage
+            DUP 7;      # @storage : @self : nat : mutez : @some : list operation : nat : @storage
+            GET 10;     # option (pair (nat %value) (address %sender)) : @self : nat : mutez : @some : list operation : nat : @storage
+            IF_NONE
+              {
+                PUSH int 108; # int : @self : nat : mutez : @some : list operation : nat : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : @self : nat : mutez : @some : list operation : nat : @storage
+            CDR;        # address : @self : nat : mutez : @some : list operation : nat : @storage
+            PAIR 3;     # pair address (pair @self nat) : mutez : @some : list operation : nat : @storage
+            TRANSFER_TOKENS; # operation : list operation : nat : @storage
+            CONS;       # list operation : nat : @storage
+            # sp.transfer(sp.record(address = self.data.pool_storage.state_buffer.open_some().sender, value = num_seed_tokens.value), sp.tez(0), sp.contract(sp.TRecord(address = sp.TAddress, value = sp.TNat).layout(("address", "value")), self.data.pool_storage.seed_token_address, entry_point='mint').open_some()) # list operation : nat : @storage
+            DUP 3;      # @storage : list operation : nat : @storage
+            GET 5;      # address : list operation : nat : @storage
+            CONTRACT %mint (pair address nat); # option (contract (pair address nat)) : list operation : nat : @storage
+            IF_NONE
+              {
+                PUSH int 135; # int : list operation : nat : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : list operation : nat : @storage
+            PUSH mutez 0; # mutez : @some : list operation : nat : @storage
+            DUP 4;      # nat : mutez : @some : list operation : nat : @storage
+            DUP 6;      # @storage : nat : mutez : @some : list operation : nat : @storage
+            GET 10;     # option (pair (nat %value) (address %sender)) : nat : mutez : @some : list operation : nat : @storage
+            IF_NONE
+              {
+                PUSH int 108; # int : nat : mutez : @some : list operation : nat : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : nat : mutez : @some : list operation : nat : @storage
+            CDR;        # address : nat : mutez : @some : list operation : nat : @storage
+            PAIR;       # pair address nat : mutez : @some : list operation : nat : @storage
+            TRANSFER_TOKENS; # operation : list operation : nat : @storage
+            CONS;       # list operation : nat : @storage
+            # self.data.pool_storage.seed_token_supply += num_seed_tokens.value # list operation : nat : @storage
+            DIG 2;      # @storage : list operation : nat
+            DUP;        # @storage : @storage : list operation : nat
+            GET 4;      # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation : nat
+            DUP;        # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation : nat
+            GET 3;      # nat : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation : nat
+            DIG 4;      # nat : nat : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            ADD;        # nat : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            UPDATE 3;   # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            UPDATE 4;   # @storage : list operation
+            # self.data.pool_storage.state_buffer = sp.none # @storage : list operation
+            DUP;        # @storage : @storage : list operation
+            GET 4;      # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            NONE (pair nat address); # option (pair nat address) : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            UPDATE 6;   # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            UPDATE 4;   # @storage : list operation
+            SWAP;       # list operation : @storage
+          }; # list operation : @storage
+      }
+      {
+        IF_LEFT
+          {
+            # == unlock_tokens ==
+            # sp.verify(params != 0, 'INSUFFICIENT_TOKENS_PROVIDED') # @parameter%unlock_tokens : @storage
+            DUP;        # @parameter%unlock_tokens : @parameter%unlock_tokens : @storage
+            PUSH nat 0; # nat : @parameter%unlock_tokens : @parameter%unlock_tokens : @storage
+            COMPARE;    # int : @parameter%unlock_tokens : @storage
+            NEQ;        # bool : @parameter%unlock_tokens : @storage
+            IF
+              {}
+              {
+                PUSH string "INSUFFICIENT_TOKENS_PROVIDED"; # string : @parameter%unlock_tokens : @storage
+                FAILWITH;   # FAILED
+              }; # @parameter%unlock_tokens : @storage
+            SWAP;       # @storage : @parameter%unlock_tokens
+            # self.data.pool_storage.state_buffer = sp.some(sp.record(value = params, sender = sp.sender)) # @storage : @parameter%unlock_tokens
+            DUP;        # @storage : @storage : @parameter%unlock_tokens
+            GET 4;      # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : @parameter%unlock_tokens
+            SENDER;     # @sender : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : @parameter%unlock_tokens
+            DIG 3;      # @parameter%unlock_tokens : @sender : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage
+            PAIR;       # pair @parameter%unlock_tokens @sender : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage
+            SOME;       # option (pair @parameter%unlock_tokens @sender) : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage
+            UPDATE 6;   # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage
+            UPDATE 4;   # @storage
+            # sp.transfer((sp.self_address, sp.self_entry_point('unlock_tokens_callback')), sp.tez(0), sp.contract(sp.TPair(sp.TAddress, sp.TContract(sp.TNat)), self.data.pool_storage.pool_token_address, entry_point='getBalance').open_some()) # @storage
+            DUP;        # @storage : @storage
+            GET 9;      # address : @storage
+            CONTRACT %getBalance (pair address (contract nat)); # option (contract (pair address (contract nat))) : @storage
+            IF_NONE
+              {
+                PUSH int 163; # int : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : @storage
+            NIL operation; # list operation : @some : @storage
+            SWAP;       # @some : list operation : @storage
+            PUSH mutez 0; # mutez : @some : list operation : @storage
+            SELF %unlock_tokens_callback; # @self : mutez : @some : list operation : @storage
+            SELF_ADDRESS; # @self : @self : mutez : @some : list operation : @storage
+            PAIR;       # pair @self @self : mutez : @some : list operation : @storage
+            TRANSFER_TOKENS; # operation : list operation : @storage
+            CONS;       # list operation : @storage
+          }
+          {
+            SWAP;       # @storage : @parameter%unlock_tokens_callback
+            # == unlock_tokens_callback ==
+            # sp.verify(sp.sender == self.data.pool_storage.pool_token_address, 'NOT_AUTHORISED') # @storage : @parameter%unlock_tokens_callback
+            DUP;        # @storage : @storage : @parameter%unlock_tokens_callback
+            DUG 2;      # @storage : @parameter%unlock_tokens_callback : @storage
+            GET 9;      # address : @parameter%unlock_tokens_callback : @storage
+            SENDER;     # @sender : address : @parameter%unlock_tokens_callback : @storage
+            COMPARE;    # int : @parameter%unlock_tokens_callback : @storage
+            EQ;         # bool : @parameter%unlock_tokens_callback : @storage
+            IF
+              {}
+              {
+                PUSH string "NOT_AUTHORISED"; # string : @parameter%unlock_tokens_callback : @storage
+                FAILWITH;   # FAILED
+              }; # @parameter%unlock_tokens_callback : @storage
+            SWAP;       # @storage : @parameter%unlock_tokens_callback
+            # sp.verify(self.data.pool_storage.state_buffer.is_some(), 'INVALID_STATE') # @storage : @parameter%unlock_tokens_callback
+            DUP;        # @storage : @storage : @parameter%unlock_tokens_callback
+            DUG 2;      # @storage : @parameter%unlock_tokens_callback : @storage
+            GET 10;     # option (pair (nat %value) (address %sender)) : @parameter%unlock_tokens_callback : @storage
+            IF_NONE
+              {
+                PUSH string "INVALID_STATE"; # string : @parameter%unlock_tokens_callback : @storage
+                FAILWITH;   # FAILED
+              }
+              {
+                DROP;       # @parameter%unlock_tokens_callback : @storage
+              }; # @parameter%unlock_tokens_callback : @storage
+            # sp.transfer(sp.record(address = self.data.pool_storage.state_buffer.open_some().sender, value = self.data.pool_storage.state_buffer.open_some().value), sp.tez(0), sp.contract(sp.TRecord(address = sp.TAddress, value = sp.TNat).layout(("address", "value")), self.data.pool_storage.seed_token_address, entry_point='burn').open_some()) # @parameter%unlock_tokens_callback : @storage
+            NIL operation; # list operation : @parameter%unlock_tokens_callback : @storage
+            DUP 3;      # @storage : list operation : @parameter%unlock_tokens_callback : @storage
+            GET 5;      # address : list operation : @parameter%unlock_tokens_callback : @storage
+            CONTRACT %burn (pair address nat); # option (contract (pair address nat)) : list operation : @parameter%unlock_tokens_callback : @storage
+            IF_NONE
+              {
+                PUSH int 189; # int : list operation : @parameter%unlock_tokens_callback : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : list operation : @parameter%unlock_tokens_callback : @storage
+            PUSH mutez 0; # mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            DUP 5;      # @storage : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            GET 10;     # option (pair (nat %value) (address %sender)) : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            IF_NONE
+              {
+                PUSH int 108; # int : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            CAR;        # nat : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            DUP 6;      # @storage : nat : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            GET 10;     # option (pair (nat %value) (address %sender)) : nat : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            IF_NONE
+              {
+                PUSH int 108; # int : nat : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : nat : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            CDR;        # address : nat : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            PAIR;       # pair address nat : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            TRANSFER_TOKENS; # operation : list operation : @parameter%unlock_tokens_callback : @storage
+            CONS;       # list operation : @parameter%unlock_tokens_callback : @storage
+            # sp.transfer(sp.record(from_ = sp.self_address, to_ = self.data.pool_storage.state_buffer.open_some().sender, value = (self.data.pool_storage.state_buffer.open_some().value * params) // self.data.pool_storage.seed_token_supply), sp.tez(0), sp.contract(sp.TRecord(from_ = sp.TAddress, to_ = sp.TAddress, value = sp.TNat).layout(("from_ as from", ("to_ as to", "value"))), self.data.pool_storage.pool_token_address, entry_point='transfer').open_some()) # list operation : @parameter%unlock_tokens_callback : @storage
+            DUP 3;      # @storage : list operation : @parameter%unlock_tokens_callback : @storage
+            GET 9;      # address : list operation : @parameter%unlock_tokens_callback : @storage
+            CONTRACT %transfer (pair address (pair address nat)); # option (contract (pair address (pair address nat))) : list operation : @parameter%unlock_tokens_callback : @storage
+            IF_NONE
+              {
+                PUSH int 201; # int : list operation : @parameter%unlock_tokens_callback : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : list operation : @parameter%unlock_tokens_callback : @storage
+            PUSH mutez 0; # mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            DUP 5;      # @storage : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            GET 7;      # nat : mutez : @some : list operation : @parameter%unlock_tokens_callback : @storage
+            DIG 4;      # @parameter%unlock_tokens_callback : nat : mutez : @some : list operation : @storage
+            DUP 6;      # @storage : @parameter%unlock_tokens_callback : nat : mutez : @some : list operation : @storage
+            GET 10;     # option (pair (nat %value) (address %sender)) : @parameter%unlock_tokens_callback : nat : mutez : @some : list operation : @storage
+            IF_NONE
+              {
+                PUSH int 108; # int : @parameter%unlock_tokens_callback : nat : mutez : @some : list operation : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : @parameter%unlock_tokens_callback : nat : mutez : @some : list operation : @storage
+            CAR;        # nat : @parameter%unlock_tokens_callback : nat : mutez : @some : list operation : @storage
+            MUL;        # nat : nat : mutez : @some : list operation : @storage
+            EDIV;       # option (pair nat nat) : mutez : @some : list operation : @storage
+            IF_NONE
+              {
+                PUSH int 186; # int : mutez : @some : list operation : @storage
+                FAILWITH;   # FAILED
+              }
+              {
+                CAR;        # nat : mutez : @some : list operation : @storage
+              }; # nat : mutez : @some : list operation : @storage
+            DUP 5;      # @storage : nat : mutez : @some : list operation : @storage
+            GET 10;     # option (pair (nat %value) (address %sender)) : nat : mutez : @some : list operation : @storage
+            IF_NONE
+              {
+                PUSH int 108; # int : nat : mutez : @some : list operation : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : nat : mutez : @some : list operation : @storage
+            CDR;        # address : nat : mutez : @some : list operation : @storage
+            SELF_ADDRESS; # @self : address : nat : mutez : @some : list operation : @storage
+            PAIR 3;     # pair @self (pair address nat) : mutez : @some : list operation : @storage
+            TRANSFER_TOKENS; # operation : list operation : @storage
+            CONS;       # list operation : @storage
+            SWAP;       # @storage : list operation
+            # self.data.pool_storage.seed_token_supply = sp.as_nat(self.data.pool_storage.seed_token_supply - self.data.pool_storage.state_buffer.open_some().value) # @storage : list operation
+            DUP;        # @storage : @storage : list operation
+            DUG 2;      # @storage : list operation : @storage
+            DUP;        # @storage : @storage : list operation : @storage
+            GET 4;      # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation : @storage
+            DUP 4;      # @storage : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation : @storage
+            GET 10;     # option (pair (nat %value) (address %sender)) : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation : @storage
+            IF_NONE
+              {
+                PUSH int 108; # int : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation : @storage
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation : @storage
+            CAR;        # nat : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation : @storage
+            DIG 4;      # @storage : nat : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            GET 7;      # nat : nat : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            SUB;        # int : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            ISNAT;      # option nat : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            IF_NONE
+              {
+                PUSH int 218; # int : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+                FAILWITH;   # FAILED
+              }
+              {}; # @some : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            UPDATE 3;   # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            UPDATE 4;   # @storage : list operation
+            # self.data.pool_storage.state_buffer = sp.none # @storage : list operation
+            DUP;        # @storage : @storage : list operation
+            GET 4;      # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            NONE (pair nat address); # option (pair nat address) : pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            UPDATE 6;   # pair (address %seed_token_address) (pair (nat %seed_token_supply) (pair (address %pool_token_address) (option %state_buffer (pair (nat %value) (address %sender))))) : @storage : list operation
+            UPDATE 4;   # @storage : list operation
+            SWAP;       # list operation : @storage
+          }; # list operation : @storage
+      }; # list operation : @storage
+    NIL operation; # list operation : list operation : @storage
+    SWAP;       # list operation : list operation : @storage
+    ITER
+      {
+        CONS;       # list operation : @storage
+      }; # list operation : @storage
+    PAIR;       # pair (list operation) @storage
+  };
