@@ -3,6 +3,7 @@ import smartpy as sp
 Addresses = sp.io.import_script_from_url("file:helpers/addresses.py")
 Errors = sp.io.import_script_from_url("file:utils/errors.py")
 FA12 = sp.io.import_script_from_url("file:helpers/fa12.py")
+FlashDummy = sp.io.import_script_from_url("file:helpers/flash_dummy.py")
 
 ########
 # Types
@@ -30,17 +31,6 @@ POOL_STORAGE_TYPE = sp.TRecord(
     )
 )
 
-FLASH_LOAN_STORAGE_TYPE = sp.TRecord(
-    fee=sp.TNat,
-    state_buffer=sp.TOption(
-        sp.TRecord(loan_amount=sp.TNat, borrower=sp.TAddress).layout(
-            ("loan_amount", "borrower"),
-        ),
-    ),
-).layout(
-    ("fee", "state_buffer"),
-)
-
 ###########
 # contract
 ###########
@@ -56,20 +46,20 @@ class BoxPool(sp.Contract):
             pool_token_address=Addresses.POOL_TOKEN,
             state_buffer=sp.none,
         ),
-        flash_loan_storage=sp.record(fee=sp.nat(100), state_buffer=sp.none),
+        flash_loan_fee=sp.nat(100),
     ):
 
         self.init(
             admin=admin,
             pool_storage=pool_storage,
-            flash_loan_storage=flash_loan_storage,
+            flash_loan_fee=flash_loan_fee,
         )
 
         self.init_type(
             sp.TRecord(
                 admin=sp.TAddress,
                 pool_storage=POOL_STORAGE_TYPE,
-                flash_loan_storage=FLASH_LOAN_STORAGE_TYPE,
+                flash_loan_fee=sp.TNat,
             )
         )
 
@@ -217,6 +207,74 @@ class BoxPool(sp.Contract):
         # Update the storage and clear the buffer
         pool_storage.seed_token_supply = sp.as_nat(pool_storage.seed_token_supply - state_buffer.value)
         pool_storage.state_buffer = sp.none
+
+    @sp.entry_point
+    def flash_loan(self, params):
+        sp.set_type(params, sp.TRecord(value=sp.TNat, receiver_contract=sp.TAddress))
+
+        # Sanity checks
+        sp.verify(params.value != sp.nat(0), Errors.INSUFFICIENT_LOAN_AMOUNT)
+
+        # Pool token instance
+        c_pool = sp.contract(
+            sp.TRecord(from_=sp.TAddress, to_=sp.TAddress, value=sp.TNat).layout(
+                (
+                    "from_ as from",
+                    ("to_ as to", "value"),
+                )
+            ),
+            self.data.pool_storage.pool_token_address,
+            "transfer",
+        ).open_some()
+
+        # Transfer tokens to the receiver
+        sp.transfer(
+            sp.record(
+                from_=sp.self_address,
+                to_=params.receiver_contract,
+                value=params.value,
+            ),
+            sp.tez(0),
+            c_pool,
+        )
+
+        # Call the execute_operation entrypoint on the receiver contract
+        c_receiver = sp.contract(
+            sp.TUnit,
+            params.receiver_contract,
+            "execute_operation",
+        ).open_some(Errors.INVALID_RECEIVER_CONTRACT)
+        sp.transfer(sp.unit, sp.tez(0), c_receiver)
+
+        # Pull back the loaned amount with fees from the receiver contract
+        final_amount = params.value + (params.value // self.data.flash_loan_fee)
+        sp.transfer(
+            sp.record(
+                from_=params.receiver_contract,
+                to_=sp.self_address,
+                value=final_amount,
+            ),
+            sp.tez(0),
+            c_pool,
+        )
+
+    @sp.entry_point
+    def modify_flash_loan_fee(self, value):
+        sp.set_type(value, sp.TNat)
+
+        # Verify that the sender is the admin
+        sp.verify(sp.sender == self.data.admin, Errors.NOT_AUTHORISED)
+
+        self.data.flash_loan_fee = value
+
+    @sp.entry_point
+    def change_admin(self, new_admin):
+        sp.set_type(new_admin, sp.TAddress)
+
+        # Verify that the sender is the admin
+        sp.verify(sp.sender == self.data.admin, Errors.NOT_AUTHORISED)
+
+        self.data.admin = new_admin
 
 
 if __name__ == "__main__":
@@ -452,6 +510,42 @@ if __name__ == "__main__":
             )
         )
         scenario.verify(pool_token.data.balances[Addresses.ALICE].balance == sp.nat(800))
+
+    #############
+    # flash_loan
+    #############
+    @sp.add_test(name="flash_loan works correctly")
+    def test():
+        scenario = sp.test_scenario()
+
+        flash_dummy = FlashDummy.FlashDummy()
+        pool_token = FA12.FA12(Addresses.ADMIN)
+        box_pool = BoxPool(
+            pool_storage=sp.record(
+                seed_token_address=Addresses.SEED_TOKEN,
+                seed_token_supply=sp.nat(2500),
+                pool_token_address=pool_token.address,
+                state_buffer=sp.none,
+            )
+        )
+
+        scenario += pool_token
+        scenario += box_pool
+        scenario += flash_dummy
+
+        # Mint pool tokens for the box pool contract & flash dummy
+        scenario += pool_token.mint(address=box_pool.address, value=sp.nat(2500)).run(sender=Addresses.ADMIN)
+        scenario += pool_token.mint(address=flash_dummy.address, value=sp.nat(2700)).run(sender=Addresses.ADMIN)
+
+        # Approve tokens for box_pool for flash_dummy
+        scenario += pool_token.approve(spender=box_pool.address, value=sp.nat(2700)).run(sender=flash_dummy.address)
+
+        # When Alice calls flash_loan with flash dummy as receiver
+        scenario += box_pool.flash_loan(value=2500, receiver_contract=flash_dummy.address).run(sender=Addresses.ALICE)
+
+        # Correct amount of tokens (original + fee) is then returned over to the pool
+        scenario.verify(pool_token.data.balances[box_pool.address].balance == sp.nat(2525))
+        scenario.verify(pool_token.data.balances[flash_dummy.address].balance == sp.nat(2675))
 
 
 sp.add_compilation_target("box_pool", BoxPool())
