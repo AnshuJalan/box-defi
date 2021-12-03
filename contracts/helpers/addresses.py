@@ -9,3 +9,4 @@ ADMIN = sp.test_account("admin").address
 
 POOL_TOKEN = sp.test_account("pool_token").address
 SEED_TOKEN = sp.test_account("seed_token").address
+BOX_FRUIT_FA2 = sp.test_account("box_fruit_fa2").address

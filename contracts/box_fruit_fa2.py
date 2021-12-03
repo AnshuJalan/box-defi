@@ -63,30 +63,39 @@ class FA2_Errors:
 
 
 class BoxFruitFA2(sp.Contract):
-    def __init__(self):
+    def __init__(
+        self,
+        admin=Addresses.ADMIN,
+        ledger=sp.big_map(
+            l={},
+            tkey=sp.TPair(sp.TAddress, sp.TNat),
+            tvalue=sp.TNat,
+        ),
+        total_supply=sp.big_map(l={}, tkey=sp.TNat, tvalue=sp.TNat),
+        token_metadata=sp.big_map(
+            l={},
+            tkey=sp.TNat,
+            tvalue=sp.TRecord(
+                token_id=sp.TNat,
+                token_info=sp.TMap(sp.TString, sp.TBytes),
+            ),
+        ),
+        operators=sp.big_map(
+            l={},
+            tkey=sp.TRecord(
+                owner=sp.TAddress,
+                operator=sp.TAddress,
+                token_id=sp.TNat,
+            ).layout(("owner", ("operator", "token_id"))),
+            tvalue=sp.TUnit,
+        ),
+    ):
         self.init(
-            admin=Addresses.ADMIN,
-            ledger=sp.big_map(
-                l={},
-                tkey=sp.TPair(sp.TAddress, sp.TNat),
-                tvalue=sp.TNat,
-            ),
-            total_supply=sp.big_map(l={}, tkey=sp.TNat, tvalue=sp.TNat),
-            token_metadata=sp.big_map(
-                l={},
-                tkey=sp.TNat,
-                tvalue=sp.TRecord(
-                    token_id=sp.TNat,
-                    token_info=sp.TMap(sp.TString, sp.TBytes),
-                ),
-            ),
-            operators=sp.big_map(
-                l={},
-                tkey=sp.TRecord(owner=sp.TAddress, operator=sp.TAddress, token_id=sp.TNat).layout(
-                    ("owner", ("operator", "token_id"))
-                ),
-                tvalue=sp.TUnit,
-            ),
+            admin=admin,
+            ledger=ledger,
+            total_supply=total_supply,
+            token_metadata=token_metadata,
+            operators=operators,
             metadata=sp.utils.metadata_of_url("ipfs://"),
         )
 
@@ -238,5 +247,14 @@ class BoxFruitFA2(sp.Contract):
             # Set total supply to zero
             self.data.total_supply[token.token_id] = 0
 
+    @sp.entry_point
+    def set_admin(self, new_admin):
+        sp.set_type(new_admin, sp.TAddress)
 
-sp.add_compilation_target("box_fruit_fa2", BoxFruitFA2())
+        sp.verify(sp.sender == self.data.admin, Errors.NOT_AUTHORISED)
+
+        self.data.admin = new_admin
+
+
+if __name__ == "__main__":
+    sp.add_compilation_target("box_fruit_fa2", BoxFruitFA2())
