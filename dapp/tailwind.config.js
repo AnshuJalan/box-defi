@@ -7,11 +7,12 @@ module.exports = {
       primary: ["Exo", "sans-serif"],
       secondary: ['"Exo 2"', "sans-serif"],
     },
-    colors: {
-      bgBlue: "#7E8CD4",
-      bgGreen: "#BBEBB7",
+    extend: {
+      colors: {
+        bgBlue: "#7E8CD4",
+        bgGreen: "#BBEBB7",
+      },
     },
-    extend: {},
   },
   variants: {
     extend: {},
