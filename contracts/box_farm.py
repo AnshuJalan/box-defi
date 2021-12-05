@@ -23,15 +23,9 @@ class Types:
     )
 
     ADD_FRUITS_PARAMS = sp.TRecord(
-        rarity_pairs=sp.TMap(sp.TPair(sp.TNat, sp.TNat), sp.TNat),
-        randomization_boundary=sp.TNat,
+        rarity_list=sp.TList(sp.TRecord(token_id=sp.TNat, index=sp.TNat)),
         tokens=sp.TList(sp.TRecord(token_id=sp.TNat, metadata=sp.TBytes)),
-    ).layout(
-        (
-            "rarity_pairs",
-            ("randomization_boundary", "tokens"),
-        )
-    )
+    ).layout(("rarity_list", "tokens"))
 
 
 ###########
@@ -549,10 +543,13 @@ class BoxFarm(sp.Contract):
         sp.verify(sp.sender == self.data.admin, Errors.NOT_AUTHORISED)
 
         # Insert rarity pairs in storage
-        self.data.rarity_pairs = params.rarity_pairs
+        prev_index = sp.local("prev_index", sp.nat(0))
+        with sp.for_("token", params.rarity_list) as token:
+            self.data.rarity_pairs[(prev_index.value, token.index)] = token.token_id
+            prev_index.value = token.index
 
         # Set randomization boundary
-        self.data.randomization_boundary = params.randomization_boundary
+        self.data.randomization_boundary = prev_index.value
 
         # Add the fruits as tokens in the FA2 contract
         c_fruit = sp.contract(

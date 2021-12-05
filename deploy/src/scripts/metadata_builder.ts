@@ -5,23 +5,23 @@ const ipfs = create({ host: "ipfs.infura.io", port: 5001, protocol: "https" });
 const ARTIFACTS = [
   {
     uri: "ipfs://QmW3a6DjufEr39HkyGpC3aECK3QP5CuvEZdG6578Fq4xLd",
-    name: "BoxFruit #1 - Elder Grape",
+    name: "BF #1 - Elder Grape",
   },
   {
     uri: "ipfs://QmU1fpW53pThaBmTzgxeUntDnwen4MUS7NXqZGNDzTUQDJ",
-    name: "BoxFruit #2 - Mangrot",
+    name: "BF #2 - Mangrot",
   },
   {
     uri: "ipfs://QmUdzpwNXZpMnjh58D3ois4miyp22zaJUdTpJ4hVs5ZAyE",
-    name: "BoxFruit #3 - Spot Berry",
+    name: "BF #3 - Spot Berry",
   },
   {
     uri: "ipfs://Qmd6e1XVnM31PuxS7PYe7cBY6sRFKiv2mnzuRbzLNbCZo3",
-    name: "BoxFruit #4 - Blue Stripe",
+    name: "BF #4 - Blue Stripe",
   },
   {
     uri: "ipfs://QmQqyE8nfZuhSx4ww279VrMXrXt4PeYt4PuG9ofpWfMbqE",
-    name: "BoxFruit #5 - Crown Apple",
+    name: "BF #5 - Crown Apple",
   },
 ];
 
