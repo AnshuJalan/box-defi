@@ -16,9 +16,9 @@ const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
   return (
     <div
-      className={`h-screen absolute md:relative w-64 md:w-72 flex flex-col justify-between py-6 bg-white transition-transform duration-300 transform ${
+      className={`h-screen fixed md:relative w-64 md:w-72 flex flex-col justify-between py-6 bg-white transition-transform duration-300 transform ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } md:translate-x-0 z-10 shadow-xl`}
+      } md:translate-x-0 z-20 shadow-xl`}
     >
       <div className="text-center">
         {/* Brand */}

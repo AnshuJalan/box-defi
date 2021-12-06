@@ -25,7 +25,12 @@ const App = () => {
     <div className="h-full w-screen bg-gradient-to-b flex from-bgGreen to-bgBlue">
       <Router>
         <SideBar setSidebarOpen={setSidebarOpen} sidebarOpen={sidebarOpen} />
-        <div onClick={(e) => checkAndCloseSidebar(e)} ref={ref} className="flex-1 p-2 md:p-4">
+        <div
+          onClick={(e) => checkAndCloseSidebar(e)}
+          ref={ref}
+          className={`h-screen w-screen fixed z-10 bg-black bg-opacity-50 ${sidebarOpen ? "block" : "hidden"}`}
+        />
+        <div className="flex-1 p-2 md:p-4">
           <Header setSidebarOpen={setSidebarOpen} />
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
