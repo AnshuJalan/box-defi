@@ -1,5 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 
+// Hooks
+import { useTypedSelector } from "../hooks";
+
+// Utils
+import { formatAddress } from "../utils/strings";
+
 // Assets
 import brand from "../assets/images/brand.png";
 
@@ -14,6 +20,8 @@ interface SidebarProps {
 const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const path = useLocation().pathname;
 
+  const { accountPkh } = useTypedSelector((state) => state.wallet);
+
   return (
     <div
       className={`h-screen fixed md:relative w-64 md:w-72 flex flex-col justify-between py-6 bg-white transition-transform duration-300 transform ${
@@ -24,6 +32,13 @@ const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
         {/* Brand */}
         <img className="w-20 mb-5 mx-auto" alt="brand" src={brand} />
         <h1 className="font-primary font-bold text-3xl">Box DeFi</h1>
+        {/* Conditional user Pkh */}
+        {accountPkh && (
+          <div className="flex justify-center items-center text-fadedBlack mt-2 text-sm">
+            <i className="bi bi-person-fill mr-1"></i>
+            <span>{formatAddress(accountPkh)}</span>
+          </div>
+        )}
         {/* Navigation */}
         <div onClick={() => setSidebarOpen(false)} className="text-left font-secondary mt-10 text-lg whitespace-pre">
           <Link to="/dashboard">

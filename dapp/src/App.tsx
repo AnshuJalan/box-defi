@@ -30,7 +30,7 @@ const App = () => {
           ref={ref}
           className={`h-screen w-screen fixed z-10 bg-black bg-opacity-50 ${sidebarOpen ? "block" : "hidden"}`}
         />
-        <div className="flex-1 p-2 md:p-4">
+        <div className="flex-1 p-2 md:py-5 md:px-7">
           <Header setSidebarOpen={setSidebarOpen} />
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
