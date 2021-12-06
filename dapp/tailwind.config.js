@@ -11,6 +11,7 @@ module.exports = {
       colors: {
         bgBlue: "#7E8CD4",
         bgGreen: "#BBEBB7",
+        fadedBlack: "#5A5A5A",
       },
     },
   },
