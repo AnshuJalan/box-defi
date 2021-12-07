@@ -5,6 +5,7 @@ import { useTypedSelector } from "../hooks";
 
 // Utils
 import { formatAddress } from "../utils/strings";
+import { explorerURL } from "../utils/global";
 
 // Assets
 import brand from "../assets/images/brand.png";
@@ -34,10 +35,12 @@ const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
         <h1 className="font-primary font-bold text-3xl">Box DeFi</h1>
         {/* Conditional user Pkh */}
         {accountPkh && (
-          <div className="flex justify-center items-center text-fadedBlack mt-2 text-sm">
-            <i className="bi bi-person-fill mr-1"></i>
-            <span>{formatAddress(accountPkh)}</span>
-          </div>
+          <a href={`${explorerURL}/${accountPkh}`} rel="noreferrer" target="_blank">
+            <div className="flex justify-center items-center text-fadedBlack mt-2 text-sm cursor-pointer hover:opacity-70">
+              <i className="bi bi-person-fill mr-1"></i>
+              <span>{formatAddress(accountPkh)}</span>
+            </div>
+          </a>
         )}
         {/* Navigation */}
         <div onClick={() => setSidebarOpen(false)} className="text-left font-secondary mt-10 text-lg whitespace-pre">

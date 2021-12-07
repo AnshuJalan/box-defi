@@ -1,5 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// Hooks
+import { useActions } from "./hooks";
 
 // Components
 import SideBar from "./components/SideBar";
@@ -7,11 +10,18 @@ import Header from "./components/Header";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
+import Pool from "./pages/Pool";
 
 const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   const ref = useRef<any>();
+
+  const { connectWallet } = useActions();
+
+  useEffect(() => {
+    connectWallet(false);
+  }, [connectWallet]);
 
   const checkAndCloseSidebar = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (!sidebarOpen) return;
@@ -34,6 +44,7 @@ const App = () => {
           <Header setSidebarOpen={setSidebarOpen} />
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/pool" element={<Pool />} />
           </Routes>
         </div>
       </Router>
