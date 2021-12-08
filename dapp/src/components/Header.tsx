@@ -6,6 +6,9 @@ import { useActions, useTypedSelector } from "../hooks";
 // Components
 import Button from "./Button";
 
+// Utils
+import { formatTokenBalance } from "../utils/strings";
+
 // Assets
 import Seed from "../assets/icons/seed.png";
 
@@ -16,7 +19,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ setSidebarOpen }) => {
   const { connectWallet } = useActions();
 
-  const { isConnected } = useTypedSelector((state) => state.wallet);
+  const { isConnected, tokenBalances } = useTypedSelector((state) => state.wallet);
 
   return (
     <div className="flex flex-row justify-between font-secondary font-medium mb-7">
@@ -28,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ setSidebarOpen }) => {
         {/* Seed balance and wallet*/}
         <div className="rounded-lg px-3 py-2 bg-white flex items-center mr-4">
           <img className="w-7 mr-4" alt="seed" src={Seed} />
-          <span className="text-lg">3,200</span>
+          <span className="text-lg">{formatTokenBalance(tokenBalances.SEED, 18)}</span>
         </div>
         {!isConnected ? (
           <Button text="Connect Wallet" icon="wallet" background="bg-white" onClick={() => connectWallet(true)} />

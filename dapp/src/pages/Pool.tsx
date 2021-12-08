@@ -6,12 +6,63 @@ import Button from "../components/Button";
 // Data
 import data from "../data/index.json";
 
+// Hooks
+import { useActions, useTypedSelector } from "../hooks";
+
+// Utils
+import { divide } from "../utils/math";
+
+// Operations
+import { lockTokens, unlockTokens } from "../operations/pool";
+
 // Assets
 import SEED from "../assets/icons/seed.png";
 import kUSD from "../assets/icons/kUSD.png";
 
 const Pool = () => {
   const [selected, setSelected] = useState<number>(0);
+  const [kUSDValue, setkUSDValue] = useState<string>("");
+  const [seedValue, setSeedValue] = useState<string>("");
+
+  const { setLoading, setSuccess, setFailure } = useActions();
+
+  const { tokenBalances } = useTypedSelector((state) => state.wallet);
+
+  // Recalibrates output value of one tokens w.r.t to the other and operation type
+  // useEffect(() => {
+  //   // If locking tokens
+  //   if(selected === 0) {
+
+  //   } else {
+
+  //   }
+  // }, [kUSDValue, seedValue])
+
+  const submit = async () => {
+    if (selected === 0) {
+      try {
+        const op = await lockTokens(kUSDValue);
+        if (op) {
+          setLoading("Locking kUSD");
+          await (await op.send()).confirmation(1);
+          setSuccess("Lockup of kUSD successful!");
+        }
+      } catch (err: any) {
+        setFailure(`Transaction Failed: ${err.message}`);
+      }
+    } else {
+      try {
+        const op = await unlockTokens(seedValue);
+        if (op) {
+          setLoading("Unlocking kUSD");
+          await (await op.send()).confirmation(1);
+          setSuccess("Unlock of kUSD successful!");
+        }
+      } catch (err: any) {
+        setFailure(`Transaction Failed: ${err.message}`);
+      }
+    }
+  };
 
   const kUSDInput = (
     <div className="flex items-center rounded-lg bg-fadedWhite md:w-3/4 m-auto">
@@ -20,11 +71,17 @@ const Pool = () => {
         <span className="text-lg font-semibold ml-2">kUSD</span>
       </div>
       <input
+        type="number"
+        value={kUSDValue}
+        onChange={(e) => setkUSDValue(e.target.value)}
         className="min-w-0 w-2/4 flex-grow rounded-tr-lg rounded-br-lg bg-fadedWhite focus:outline-none text-xl px-2"
         placeholder="0.00"
       />
       {selected === 0 && (
-        <span className="text-base font-semibold text-fadedBlack opacity-70 hover:opacity-100 mr-2 cursor-pointer">
+        <span
+          onClick={() => setkUSDValue(divide(tokenBalances.kUSD, 10 ** 18))}
+          className="text-base font-semibold text-fadedBlack opacity-70 hover:opacity-100 mr-2 cursor-pointer"
+        >
           MAX
         </span>
       )}
@@ -38,11 +95,17 @@ const Pool = () => {
         <span className="text-lg font-semibold ml-2">SEED</span>
       </div>
       <input
+        type="number"
+        value={seedValue}
+        onChange={(e) => setSeedValue(e.target.value)}
         className="min-w-0 w-2/4 flex-grow rounded-tr-lg rounded-br-lg bg-fadedWhite focus:outline-none text-xl px-2"
         placeholder="0.00"
       />
       {selected === 1 && (
-        <span className="text-base font-semibold text-fadedBlack opacity-70 hover:opacity-100 mr-2 cursor-pointer">
+        <span
+          onClick={() => setSeedValue(divide(tokenBalances.SEED, 10 ** 18))}
+          className="text-base font-semibold text-fadedBlack opacity-70 hover:opacity-100 mr-2 cursor-pointer"
+        >
           MAX
         </span>
       )}
@@ -91,9 +154,9 @@ const Pool = () => {
             {selected === 1 ? kUSDInput : SEEDInput}
             <div className="mt-4">
               {selected === 0 ? (
-                <Button text="Lock Tokens" icon="lock-fill" background="bg-bgGreen2" onClick={() => true} />
+                <Button text="Lock Tokens" icon="lock-fill" background="bg-bgGreen2" onClick={submit} />
               ) : (
-                <Button text="Unlock Tokens" icon="unlock-fill" background="bg-bgBrown" onClick={() => true} />
+                <Button text="Unlock Tokens" icon="unlock-fill" background="bg-bgBrown" onClick={submit} />
               )}
             </div>
           </React.Fragment>

@@ -7,16 +7,22 @@ export interface ConnectWalletAction {
     isConnected: boolean;
     walletInstance: BeaconWallet;
     accountPkh: string;
+  };
+}
+
+export interface GetBalancesAction {
+  type: t.WalletActionTypes.GET_BALANCES;
+  payload: {
     tokenBalances: {
-      kUSD: number;
-      bSEED: number;
+      kUSD: string;
+      SEED: string;
     };
     fruitBalances: {
-      elderGrape: number;
-      mangrot: number;
-      spotBerry: number;
-      blueStripe: number;
-      crownApple: number;
+      elderGrape: string;
+      mangrot: string;
+      spotBerry: string;
+      blueStripe: string;
+      crownApple: string;
     };
   };
 }

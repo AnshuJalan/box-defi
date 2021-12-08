@@ -1,3 +1,7 @@
-import { ConnectWalletAction } from "./wallet";
+import { SetLoadingAction, SetFailureAction, SetSuccessAction, HideLoaderAction } from "./loader";
+import { ConnectWalletAction, GetBalancesAction } from "./wallet";
+import { LoadContractsAction } from "./contract";
 
-export type WalletAction = ConnectWalletAction;
+export type ContractAction = LoadContractsAction;
+export type WalletAction = ConnectWalletAction | GetBalancesAction;
+export type LoaderAcion = SetFailureAction | SetSuccessAction | SetLoadingAction | HideLoaderAction;

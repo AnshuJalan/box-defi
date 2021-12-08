@@ -10,15 +10,15 @@ interface WalletState {
   walletInstance: BeaconWallet | null;
   accountPkh: string;
   tokenBalances: {
-    kUSD: number;
-    bSEED: number;
+    kUSD: string;
+    SEED: string;
   };
   fruitBalances: {
-    elderGrape: number;
-    mangrot: number;
-    spotBerry: number;
-    blueStripe: number;
-    crownApple: number;
+    elderGrape: string;
+    mangrot: string;
+    spotBerry: string;
+    blueStripe: string;
+    crownApple: string;
   };
 }
 
@@ -27,15 +27,15 @@ const initialState: WalletState = {
   walletInstance: null,
   accountPkh: "",
   tokenBalances: {
-    kUSD: 0,
-    bSEED: 0,
+    kUSD: "0",
+    SEED: "0",
   },
   fruitBalances: {
-    elderGrape: 0,
-    mangrot: 0,
-    spotBerry: 0,
-    blueStripe: 0,
-    crownApple: 0,
+    elderGrape: "0",
+    mangrot: "0",
+    spotBerry: "0",
+    blueStripe: "0",
+    crownApple: "0",
   },
 };
 
@@ -43,6 +43,13 @@ export const walletReducer: Reducer<WalletState, WalletAction> = (state = initia
   switch (action.type) {
     case t.WalletActionTypes.CONNECT_WALLET: {
       return {
+        ...state,
+        ...action.payload,
+      };
+    }
+    case t.WalletActionTypes.GET_BALANCES: {
+      return {
+        ...state,
         ...action.payload,
       };
     }

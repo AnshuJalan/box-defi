@@ -6,8 +6,13 @@ import { BeaconWallet } from "@taquito/beacon-wallet";
 import { WalletAction } from "../actions";
 import * as t from "../types";
 
+// API
+import { getFA12Balance, getFA2Balance } from "../../api";
+
 // Globals
-import { network } from "../../utils/global";
+import { network, kUSDAddress, seedAddress, boxFruitAddress } from "../../utils/global";
+
+import { RootState } from "../reducers";
 
 export const connectWallet =
   (requestPermission: boolean) =>
@@ -28,17 +33,6 @@ export const connectWallet =
             isConnected: true,
             walletInstance: wallet,
             accountPkh,
-            tokenBalances: {
-              kUSD: 0,
-              bSEED: 0,
-            },
-            fruitBalances: {
-              elderGrape: 0,
-              mangrot: 0,
-              spotBerry: 0,
-              blueStripe: 0,
-              crownApple: 0,
-            },
           },
         });
       }
@@ -53,18 +47,37 @@ export const connectWallet =
           isConnected: true,
           walletInstance: wallet,
           accountPkh,
-          tokenBalances: {
-            kUSD: 0,
-            bSEED: 0,
-          },
-          fruitBalances: {
-            elderGrape: 0,
-            mangrot: 0,
-            spotBerry: 0,
-            blueStripe: 0,
-            crownApple: 0,
-          },
         },
       });
     }
   };
+
+export const getBalances = () => async (dispatch: Dispatch<WalletAction>, getState: () => RootState) => {
+  const accountPkh = getState().wallet.accountPkh;
+
+  const kUSD = await getFA12Balance(kUSDAddress, accountPkh);
+  const SEED = await getFA12Balance(seedAddress, accountPkh);
+
+  const elderGrape = await getFA2Balance(boxFruitAddress, accountPkh, "1");
+  const mangrot = await getFA2Balance(boxFruitAddress, accountPkh, "2");
+  const spotBerry = await getFA2Balance(boxFruitAddress, accountPkh, "3");
+  const blueStripe = await getFA2Balance(boxFruitAddress, accountPkh, "4");
+  const crownApple = await getFA2Balance(boxFruitAddress, accountPkh, "5");
+
+  dispatch({
+    type: t.WalletActionTypes.GET_BALANCES,
+    payload: {
+      tokenBalances: {
+        kUSD,
+        SEED,
+      },
+      fruitBalances: {
+        elderGrape,
+        mangrot,
+        spotBerry,
+        blueStripe,
+        crownApple,
+      },
+    },
+  });
+};

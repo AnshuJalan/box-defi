@@ -16,7 +16,7 @@ import "./index.css";
 
 const composeEnhancers = composeWithDevTools({});
 
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
+export const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 
 ReactDOM.render(
   <React.StrictMode>

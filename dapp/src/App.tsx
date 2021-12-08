@@ -2,11 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // Hooks
-import { useActions } from "./hooks";
+import { useActions, useTypedSelector } from "./hooks";
 
 // Components
 import SideBar from "./components/SideBar";
 import Header from "./components/Header";
+import Loader from "./components/Loader";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -17,11 +18,26 @@ const App = () => {
 
   const ref = useRef<any>();
 
-  const { connectWallet } = useActions();
+  const { connectWallet, loadContracts, getBalances } = useActions();
 
+  const { isConnected, accountPkh } = useTypedSelector((state) => state.wallet);
+
+  // Check for existing active accounts
   useEffect(() => {
     connectWallet(false);
   }, [connectWallet]);
+
+  // Load token and fruit balance
+  useEffect(() => {
+    if (accountPkh) getBalances();
+  }, [accountPkh, getBalances]);
+
+  // Load the wallet contract instances once the wallet is loaded
+  useEffect(() => {
+    if (isConnected) {
+      loadContracts();
+    }
+  }, [isConnected, loadContracts]);
 
   const checkAndCloseSidebar = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (!sidebarOpen) return;
@@ -34,6 +50,7 @@ const App = () => {
   return (
     <div className="h-full w-screen bg-gradient-to-b flex from-bgGreen to-bgBlue">
       <Router>
+        <Loader />
         <SideBar setSidebarOpen={setSidebarOpen} sidebarOpen={sidebarOpen} />
         <div
           onClick={(e) => checkAndCloseSidebar(e)}
