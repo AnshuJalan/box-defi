@@ -3,5 +3,5 @@ export const formatAddress = (address: string): string => {
 };
 
 export const formatTokenBalance = (balance: string, decimals: number): string => {
-  return (parseInt(balance) / 10 ** decimals).toFixed(3);
+  return (parseFloat(balance) / 10 ** decimals).toFixed(2).replace(/[.,]00$/, "");
 };

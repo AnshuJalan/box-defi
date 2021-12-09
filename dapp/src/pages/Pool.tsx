@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // Components
 import Button from "../components/Button";
@@ -10,7 +10,8 @@ import data from "../data/index.json";
 import { useActions, useTypedSelector } from "../hooks";
 
 // Utils
-import { divide } from "../utils/math";
+import { divide, multiply } from "../utils/math";
+import { formatTokenBalance } from "../utils/strings";
 
 // Operations
 import { lockTokens, unlockTokens } from "../operations/pool";
@@ -27,16 +28,17 @@ const Pool = () => {
   const { setLoading, setSuccess, setFailure } = useActions();
 
   const { tokenBalances } = useTypedSelector((state) => state.wallet);
+  const { seedSupply, kUSDLocked } = useTypedSelector((state) => state.stats);
 
   // Recalibrates output value of one tokens w.r.t to the other and operation type
-  // useEffect(() => {
-  //   // If locking tokens
-  //   if(selected === 0) {
-
-  //   } else {
-
-  //   }
-  // }, [kUSDValue, seedValue])
+  useEffect(() => {
+    // If locking tokens
+    if (selected === 0) {
+      setSeedValue(divide(divide(multiply(multiply(kUSDValue, 10 ** 18), seedSupply), kUSDLocked), 10 ** 18));
+    } else if (selected === 1) {
+      setkUSDValue(divide(divide(multiply(multiply(seedValue, 10 ** 18), kUSDLocked), seedSupply), 10 ** 18));
+    }
+  }, [kUSDValue, seedValue, kUSDLocked, seedSupply, selected]);
 
   const submit = async () => {
     if (selected === 0) {
@@ -75,7 +77,8 @@ const Pool = () => {
         value={kUSDValue}
         onChange={(e) => setkUSDValue(e.target.value)}
         className="min-w-0 w-2/4 flex-grow rounded-tr-lg rounded-br-lg bg-fadedWhite focus:outline-none text-xl px-2"
-        placeholder="0.00"
+        placeholder={selected === 0 ? "0.00" : "kUSD received (Approx)"}
+        disabled={selected === 1}
       />
       {selected === 0 && (
         <span
@@ -99,7 +102,8 @@ const Pool = () => {
         value={seedValue}
         onChange={(e) => setSeedValue(e.target.value)}
         className="min-w-0 w-2/4 flex-grow rounded-tr-lg rounded-br-lg bg-fadedWhite focus:outline-none text-xl px-2"
-        placeholder="0.00"
+        placeholder={selected === 1 ? "0.00" : "SEED received (Approx)"}
+        disabled={selected === 0}
       />
       {selected === 1 && (
         <span
@@ -117,11 +121,11 @@ const Pool = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-y-6">
         <div className="flex flex-col items-center">
           <div className="font-medium text-fadedBlack text-base md:text-xl mb-1">🔒 Locked kUSD</div>
-          <div className="font-semibold text-2xl">32,000</div>
+          <div className="font-semibold text-2xl">{formatTokenBalance(kUSDLocked, 18)}</div>
         </div>
         <div className="flex flex-col items-center">
           <div className="font-medium text-fadedBlack text-base md:text-xl mb-1">🌰 Seed Supply</div>
-          <div className="font-semibold text-2xl">31,500</div>
+          <div className="font-semibold text-2xl">{formatTokenBalance(seedSupply, 18)}</div>
         </div>
         <div className="flex flex-col items-center">
           <div className="font-medium text-fadedBlack text-base md:text-xl mb-1">🚀 Flash Loan Fee</div>

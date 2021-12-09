@@ -20,21 +20,25 @@ export const loadContracts =
     const Tezos = new TezosToolkit(rpcNode);
     Tezos.setWalletProvider(walletInstance);
 
-    const kUSDContract = await Tezos.wallet.at(kUSDAddress);
-    const seedContract = await Tezos.wallet.at(seedAddress);
-    const boxFruitContract = await Tezos.wallet.at(boxFruitAddress);
-    const boxPoolContract = await Tezos.wallet.at(boxPoolAddress);
-    const boxFarmContract = await Tezos.wallet.at(boxFarmAddress);
+    try {
+      const kUSDContract = await Tezos.wallet.at(kUSDAddress);
+      const seedContract = await Tezos.wallet.at(seedAddress);
+      const boxFruitContract = await Tezos.wallet.at(boxFruitAddress);
+      const boxPoolContract = await Tezos.wallet.at(boxPoolAddress);
+      const boxFarmContract = await Tezos.wallet.at(boxFarmAddress);
 
-    dispatch({
-      type: t.ContractActionTypes.LOAD_CONTRACTS,
-      payload: {
-        tezos: Tezos,
-        kUSDContract,
-        seedContract,
-        boxFruitContract,
-        boxPoolContract,
-        boxFarmContract,
-      },
-    });
+      dispatch({
+        type: t.ContractActionTypes.LOAD_CONTRACTS,
+        payload: {
+          tezos: Tezos,
+          kUSDContract,
+          seedContract,
+          boxFruitContract,
+          boxPoolContract,
+          boxFarmContract,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };

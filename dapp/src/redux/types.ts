@@ -7,6 +7,10 @@ export enum ContractActionTypes {
   LOAD_CONTRACTS = "LOAD_CONTRACTS",
 }
 
+export enum StatsActionTypes {
+  LOAD_STATS = "LOAD_STATS",
+}
+
 export enum LoaderActionTypes {
   SET_LOADING = "SET_LOADING",
   SET_SUCCESS = "SET_SUCCESS",

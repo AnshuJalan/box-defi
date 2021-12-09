@@ -12,20 +12,22 @@ import Loader from "./components/Loader";
 // Pages
 import Dashboard from "./pages/Dashboard";
 import Pool from "./pages/Pool";
+import Farm from "./pages/Farm";
 
 const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   const ref = useRef<any>();
 
-  const { connectWallet, loadContracts, getBalances } = useActions();
+  const { connectWallet, loadContracts, getBalances, loadStats } = useActions();
 
   const { isConnected, accountPkh } = useTypedSelector((state) => state.wallet);
 
-  // Check for existing active accounts
+  // Initial checks and load ups
   useEffect(() => {
     connectWallet(false);
-  }, [connectWallet]);
+    loadStats();
+  }, [connectWallet, loadStats]);
 
   // Load token and fruit balance
   useEffect(() => {
@@ -62,6 +64,7 @@ const App = () => {
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/pool" element={<Pool />} />
+            <Route path="/farm" element={<Farm />} />
           </Routes>
         </div>
       </Router>
