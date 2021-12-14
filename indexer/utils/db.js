@@ -3,6 +3,8 @@ const global = require("./global");
 
 module.exports = {
   connectDB: () => {
-    mongoose.connect(global.mongodbURL);
+    mongoose.connect(global.mongodbURL).then(() => {
+      console.log(">> MongoDB connected");
+    });
   },
 };

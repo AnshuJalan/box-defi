@@ -4,6 +4,8 @@ const tzkt = require("./utils/tzkt");
 const BigMaps = require("./utils/bigmaps");
 const global = require("./utils/global");
 
+require("dotenv").config();
+
 // Routes
 const boxRoutes = require("./routes/boxes");
 
