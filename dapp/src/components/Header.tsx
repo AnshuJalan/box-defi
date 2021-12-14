@@ -22,10 +22,10 @@ const Header: React.FC<HeaderProps> = ({ setSidebarOpen }) => {
   const { isConnected, tokenBalances } = useTypedSelector((state) => state.wallet);
 
   return (
-    <div className="flex flex-row justify-between font-secondary font-medium mb-7">
+    <div className="flex flex-row justify-between font-secondary font-medium mb-4">
       {/* Sidebar trigger btn */}
       <div>
-        <i onClick={() => setSidebarOpen(true)} className="bi bi-list text-4xl md:opacity-0"></i>
+        <i onClick={() => setSidebarOpen(true)} className="bi bi-list text-4xl lg:opacity-0"></i>
       </div>
       <div className="flex items-center">
         {/* Seed balance and wallet*/}

@@ -6,6 +6,11 @@ import Stage2 from "../assets/images/stages/stage-2.png";
 import Stage3 from "../assets/images/stages/stage-3.png";
 import Stage4 from "../assets/images/stages/stage-4.png";
 import Stage5 from "../assets/images/stages/stage-5.png";
+import Watering from "../assets/images/watering.gif";
+import Growing from "../assets/images/growing.gif";
+
+// Data
+import data from "../data/index.json";
 
 // Components
 import Button from "../components/Button";
@@ -99,18 +104,18 @@ const Farm = () => {
   }, [page, setStart, setEnd, start, end]);
 
   return (
-    <div className="font-secondary grid grid-cols-12 gap-y-6 md:gap-x-6">
-      <div className="rounded-lg bg-white p-6 col-span-12 md:col-span-9">
-        <div className="font-primary font-semibold text-fadedBlack text-xl">Planted Boxes</div>
+    <div className="font-secondary flex flex-col gap-y-6 xl:w-10/12 m-auto">
+      <div className="rounded-lg bg-white p-6">
+        <div className="font-primary font-semibold text-fadedBlack text-xl">Plant Boxes</div>
         <div className="mt-4 grid grid-cols-2 md:grid-cols-5">
           {/* Single Box */}
           {arr.slice((page - 1) * PLANTS_PER_PAGE, page * PLANTS_PER_PAGE).map((a) => (
-            <div className="relative w-5/6 cursor-pointer pb-6">
-              <div className="absolute left-0 bottom-0 h-full w-full rounded-xl bg-black opacity-0 bg-opacity-0 hover:bg-opacity-80 hover:opacity-100 text-xl font-semibold text-white px-2 py-5 flex flex-col justify-between items-center text-center">
+            <div className="relative m-auto w-5/6 cursor-pointer pb-6">
+              <div className="absolute left-0 bottom-0 h-full w-full rounded-xl bg-black opacity-0 bg-opacity-0 hover:bg-opacity-80 hover:opacity-100 text-lg font-semibold text-white px-2 py-5 flex flex-col justify-between items-center text-center">
                 Water in 23H:45M
                 <Button text="Water" background="bg-blue-400" icon="droplet" onClick={() => true} />
               </div>
-              <img className="w-full" alt="stage" src={a} />
+              <img className="w-5/6 m-auto" alt="stage" src={a} />
             </div>
           ))}
         </div>
@@ -118,7 +123,8 @@ const Farm = () => {
           <i onClick={() => setPage(Math.max(1, page - 1))} className="bi bi-caret-left-fill cursor-pointer text-lg" />
           {pageArr.slice(start, end).map((i) => (
             <div
-              className={`rounded-lg ${
+              onClick={() => setPage(i)}
+              className={`rounded-lg cursor-pointer ${
                 page === i ? "bg-black text-white" : "text-fadedBlack"
               } text-lg py-1.5 px-2.5 mx-1`}
             >
@@ -131,7 +137,38 @@ const Farm = () => {
           />
         </div>
       </div>
-      <div className="rounded-lg bg-white p-6 col-span-12 md:col-span-3 h-full"></div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="flex flex-col justify-between rounded-lg bg-white p-6">
+          <div className="font-primary font-semibold text-fadedBlack text-xl">Water All</div>
+          <div className="mx-auto">
+            <img className="w-16 m-auto my-5" alt="plant_watering" src={Watering} />
+            <div className="m-auto">
+              <Button
+                text="Water All Boxes"
+                textColor="text-white"
+                background="bg-blue-400"
+                icon="droplet"
+                onClick={() => true}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col justify-between rounded-lg bg-white p-6">
+          <div className="font-primary font-semibold text-fadedBlack text-xl">Plant Seeds</div>
+          <div className="mx-auto">
+            <img className="w-32 mx-auto pb-4" alt="plant_watering" src={Growing} />
+            <div className="m-auto">
+              <Button
+                text="Plant Seeds"
+                textColor="text-white"
+                background="bg-green-500"
+                icon="flower3"
+                onClick={() => true}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
