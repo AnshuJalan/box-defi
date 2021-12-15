@@ -47,7 +47,7 @@ const Dashboard = () => {
       </div>
       {/* Fruits stats */}
       <div className="rounded-lg bg-white p-6 mt-6 font-secondary">
-        <div className="font-medium text-fadedBlack text-center text-2xl mb-7">Fruits Harvested</div>
+        <div className="font-medium text-fadedBlack text-center text-2xl mb-7">Fruits Supply</div>
         <div className="font-semibold  grid grid-cols-1 md:grid-cols-5 gap-y-6">
           <div className="flex flex-col items-center">
             <img className="w-6/12 md:w-8/12" alt="fruit" src={ElderGrape} />

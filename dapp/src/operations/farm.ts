@@ -1,4 +1,4 @@
-import { WalletParamsWithKind, OpKind, WalletOperationBatch } from "@taquito/taquito";
+import { WalletParamsWithKind, OpKind, WalletOperationBatch, ContractMethod, Wallet } from "@taquito/taquito";
 import BigNumber from "bignumber.js";
 
 // Utils
@@ -51,6 +51,32 @@ export const plantSeeds = async (boxes: number): Promise<WalletOperationBatch | 
     // Return operation instance
     const batch = await tezos.wallet.batch(opList);
     return batch;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const waterPlants = async (boxes: number[]): Promise<ContractMethod<Wallet> | undefined> => {
+  const { boxFarmContract } = store.getState().contract;
+
+  if (!boxFarmContract) return;
+
+  try {
+    const op = await boxFarmContract.methods.water_plants(boxes);
+    return op;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const harvest = async (boxId: number): Promise<ContractMethod<Wallet> | undefined> => {
+  const { boxFarmContract } = store.getState().contract;
+
+  if (!boxFarmContract) return;
+
+  try {
+    const op = await boxFarmContract.methods.harvest(boxId);
+    return op;
   } catch (err) {
     throw err;
   }

@@ -20,9 +20,6 @@ export const loadBoxes =
     try {
       // Retrieve boxes
       const _res = await axios.get(`${indexerAPI}/boxes?address=${accountPkh}`);
-      if (!_res.data.length) {
-        return;
-      }
       const boxes: Box[] = [];
       // Iterate and assign stages
       for (const box of _res.data) {
@@ -41,13 +38,17 @@ export const loadBoxes =
     }
   };
 
-const findStage = (timesWatered: number, lastWatered: string): { stage: BoxStage; nextCheckpoint: number } => {
+const findStage = (
+  timesWatered: number,
+  lastWatered: string
+): { stage: BoxStage; needsWater: boolean; waterBy: number } => {
   const notWateredIn = Date.now() - new Date(lastWatered).getTime();
-  console.log(notWateredIn);
-  if (notWateredIn > 2 * waterPeriod) return { stage: BoxStage.DEAD, nextCheckpoint: 0 };
+  if (notWateredIn > 2 * waterPeriod && timesWatered !== 5)
+    return { stage: BoxStage.DEAD, waterBy: 0, needsWater: false };
   else {
     return {
-      nextCheckpoint: 2 * waterPeriod - notWateredIn,
+      waterBy: 2 * waterPeriod - notWateredIn,
+      needsWater: notWateredIn > waterPeriod,
       stage:
         notWateredIn > waterPeriod
           ? BoxStage[`STAGE_${timesWatered + 1}` as keyof typeof BoxStage]

@@ -12,7 +12,8 @@ export enum BoxStage {
 
 export interface Box {
   key: number;
-  nextCheckpoint: number;
+  waterBy: number;
+  needsWater: boolean;
   stage: BoxStage;
 }
 

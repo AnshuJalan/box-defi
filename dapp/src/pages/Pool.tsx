@@ -50,7 +50,7 @@ const Pool = () => {
           setSuccess("Lockup of kUSD successful!");
         }
       } catch (err: any) {
-        setFailure(`Transaction Failed: ${err.message}`);
+        setFailure(`Locking Failed: ${err.message}`);
       }
     } else {
       try {
@@ -61,7 +61,7 @@ const Pool = () => {
           setSuccess("Unlock of kUSD successful!");
         }
       } catch (err: any) {
-        setFailure(`Transaction Failed: ${err.message}`);
+        setFailure(`Unlocking Failed: ${err.message}`);
       }
     }
   };

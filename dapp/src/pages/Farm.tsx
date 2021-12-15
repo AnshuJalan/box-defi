@@ -3,11 +3,15 @@ import { useEffect, useState } from "react";
 import Watering from "../assets/images/watering.gif";
 import Growing from "../assets/images/growing.gif";
 
+// Types
+import { BoxStage, Box } from "../redux/actions/farm";
+
 // Operations
-import { plantSeeds } from "../operations/farm";
+import { plantSeeds, waterPlants, harvest } from "../operations/farm";
 
 // Utils
 import { seedsPerBox } from "../utils/global";
+import { getHHMMString } from "../utils/time";
 
 // Hooks
 import { useTypedSelector, useActions } from "../hooks";
@@ -53,7 +57,66 @@ const Farm = () => {
         setSuccess("Planting of seeds succesful!");
       }
     } catch (err: any) {
-      setFailure(`Transaction Failed: ${err.message}`);
+      setFailure(`Planting Failed: ${err.message}`);
+    }
+  };
+
+  const handleWaterPlants = async (keys: number[]) => {
+    try {
+      const op = await waterPlants(keys);
+      if (op) {
+        setLoading("Watering Plants");
+        await (await op.send()).confirmation(1);
+        setSuccess("Watering succesful!");
+      }
+    } catch (err: any) {
+      setFailure(`Watering Failed: ${err.message}`);
+    }
+  };
+
+  const handleHarvest = async (key: number) => {
+    try {
+      const op = await harvest(key);
+      if (op) {
+        setLoading("Harvesting Plant");
+        await (await op.send()).confirmation(1);
+        setSuccess("Harvest succesful!");
+      }
+    } catch (err: any) {
+      setFailure(`Harvest Failed: ${err.message}`);
+    }
+  };
+
+  // Generate an overlay for the boxes
+  const getOverlay = (box: Box) => {
+    if (box.stage === BoxStage.DEAD) {
+      return (
+        <div className="absolute left-0 bottom-0 h-full w-full rounded-xl bg-black bg-opacity-80 font-semibold text-white px-2 py-5 flex flex-col justify-evenly items-center text-center">
+          <i className="bi bi-emoji-frown text-6xl" />
+          <div className="text-3xl">Dead</div>
+        </div>
+      );
+    } else if (box.stage === BoxStage.STAGE_6) {
+      return (
+        <div className="absolute left-0 bottom-0 h-full w-full rounded-xl bg-black opacity-0 bg-opacity-0 hover:bg-opacity-80 hover:opacity-100 text-2xl font-semibold text-white px-2 py-5 flex flex-col justify-between items-center text-center">
+          Plant Fully grown!
+          <Button text="Harvest" background="bg-green-600" icon="flower3" onClick={() => handleHarvest(box.key)} />
+        </div>
+      );
+    } else if (box.needsWater) {
+      return (
+        <div className="absolute left-0 bottom-0 h-full w-full rounded-xl bg-black opacity-0 bg-opacity-0 hover:bg-opacity-80 hover:opacity-100 text-lg font-semibold text-white px-2 py-5 flex flex-col justify-between items-center text-center">
+          Water in {getHHMMString(box.waterBy)}
+          <Button text="Water" background="bg-blue-400" icon="droplet" onClick={() => handleWaterPlants([box.key])} />
+        </div>
+      );
+    } else {
+      return (
+        <div className="absolute left-0 bottom-0 h-full w-full rounded-xl bg-black opacity-0 bg-opacity-0 hover:bg-opacity-80 hover:opacity-100 font-semibold text-white px-2 py-5 flex flex-col justify-evenly items-center text-center">
+          <i className="bi bi-emoji-smile text-6xl" />
+          <div className="text-2xl">Plant is healthy!</div>
+        </div>
+      );
     }
   };
 
@@ -61,14 +124,10 @@ const Farm = () => {
     <div className="font-secondary flex flex-col gap-y-6 xl:w-10/12 m-auto">
       <div className="rounded-lg bg-white p-6">
         <div className="font-primary font-semibold text-fadedBlack text-xl">Planted Boxes</div>
-        <div className="mt-4 grid grid-cols-2 md:grid-cols-5">
-          {/* Single Box */}
+        <div className="mt-4 grid grid-cols-2 md:grid-cols-5 gap-y-2">
           {boxes.slice((page - 1) * PLANTS_PER_PAGE, page * PLANTS_PER_PAGE).map((box, index) => (
             <div key={index} className="relative m-auto w-5/6 cursor-pointer pb-6">
-              <div className="absolute left-0 bottom-0 h-full w-full rounded-xl bg-black opacity-0 bg-opacity-0 hover:bg-opacity-80 hover:opacity-100 text-lg font-semibold text-white px-2 py-5 flex flex-col justify-between items-center text-center">
-                Water in 23H:45M
-                <Button text="Water" background="bg-blue-400" icon="droplet" onClick={() => true} />
-              </div>
+              {getOverlay(box)}
               <img
                 className="w-5/6 m-auto"
                 alt="stage"
@@ -107,7 +166,7 @@ const Farm = () => {
                 textColor="text-white"
                 background="bg-blue-400"
                 icon="droplet"
-                onClick={() => true}
+                onClick={() => handleWaterPlants(boxes.filter((box) => box.needsWater).map((box) => box.key))}
               />
             </div>
           </div>
