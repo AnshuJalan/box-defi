@@ -9,7 +9,7 @@ const init = async () => {
 
   // Subscribe to BigMap changes
   await connection.invoke("SubscribeToBigMaps", {
-    ptr: 24386,
+    ptr: global.boxesBigMap,
   });
 };
 
