@@ -17,7 +17,7 @@ const ADMIN = "tz1ZczbHu1iLWRa88n9CUiCKDGex5ticp19S";
 const FLASH_LOAN_FEE = 100;
 
 // Seed tokens to plant in every box
-const SEEDS_PER_BOX = 10;
+const SEEDS_PER_BOX = 10 * 10 ** 18;
 
 // Minimum watering interval in seconds
 const WATER_PERIOD = 300;

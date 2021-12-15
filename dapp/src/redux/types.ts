@@ -11,6 +11,10 @@ export enum StatsActionTypes {
   LOAD_STATS = "LOAD_STATS",
 }
 
+export enum FarmActionTypes {
+  LOAD_BOXES = "LOAD_BOXES",
+}
+
 export enum LoaderActionTypes {
   SET_LOADING = "SET_LOADING",
   SET_SUCCESS = "SET_SUCCESS",

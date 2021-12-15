@@ -19,7 +19,7 @@ const App = () => {
 
   const ref = useRef<any>();
 
-  const { connectWallet, loadContracts, getBalances, loadStats } = useActions();
+  const { connectWallet, loadContracts, getBalances, loadStats, loadBoxes } = useActions();
 
   const { isConnected, accountPkh } = useTypedSelector((state) => state.wallet);
 
@@ -31,8 +31,11 @@ const App = () => {
 
   // Load token and fruit balance
   useEffect(() => {
-    if (accountPkh) getBalances();
-  }, [accountPkh, getBalances]);
+    if (accountPkh) {
+      getBalances();
+      loadBoxes();
+    }
+  }, [accountPkh, getBalances, loadBoxes]);
 
   // Load the wallet contract instances once the wallet is loaded
   useEffect(() => {
