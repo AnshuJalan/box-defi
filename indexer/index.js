@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const db = require("./utils/db");
 const tzkt = require("./utils/tzkt");
 const BigMaps = require("./utils/bigmaps");
@@ -24,6 +25,7 @@ db.connectDB();
 
 // Middlewares
 app.use(express.json());
+app.use(cors());
 app.use("/boxes", boxRoutes);
 
 app.listen(global.port, async () => {
