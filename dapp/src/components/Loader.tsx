@@ -7,7 +7,7 @@ import { useActions, useTypedSelector } from "../hooks";
 import { Status } from "../redux/reducers/loader";
 
 // Assets
-// import Growing from "../assets/images/growing.gif";
+import Growing from "../assets/images/growing.gif";
 import Watering from "../assets/images/watering.gif";
 
 const Loader = () => {
@@ -23,7 +23,11 @@ const Loader = () => {
     return (
       <div className="w-screen h-screen fixed bg-black bg-opacity-90 z-30">
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-2/3 flex flex-col items-center">
-          <img className="w-24" alt="growing_plant" src={Watering} />
+          <img
+            className="w-24"
+            alt="growing_plant"
+            src={text.toLowerCase().includes("watering") ? Watering : Growing}
+          />
           <div className="font-primary text-2xl mt-8 text-white">{text}</div>
         </div>
       </div>

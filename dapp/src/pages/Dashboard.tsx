@@ -37,7 +37,7 @@ const Dashboard = () => {
           <div className="font-semibold text-2xl">{formatTokenBalance(kUSDLocked, 18)} kUSD</div>
         </div>
         <div className="flex flex-col items-center">
-          <div className="font-medium text-fadedBlack text-base md:text-xl mb-1">📦 Live Boxes</div>
+          <div className="font-medium text-fadedBlack text-base md:text-xl mb-1">📦 Alive Boxes</div>
           <div className="font-semibold text-2xl">53,450</div>
         </div>
         <div className="flex flex-col items-center">

@@ -10,7 +10,7 @@ import { BoxStage, Box } from "../redux/actions/farm";
 import { plantSeeds, waterPlants, harvest } from "../operations/farm";
 
 // Utils
-import { seedsPerBox } from "../utils/global";
+import { seedsPerBox, waterPeriod } from "../utils/global";
 import { getHHMMString } from "../utils/time";
 
 // Hooks
@@ -26,12 +26,14 @@ const Farm = () => {
   const [page, setPage] = useState<number>(1);
   const [start, setStart] = useState<number>(0);
   const [end, setEnd] = useState<number>(3);
+  const [filterOption, setFilterOption] = useState<number>(1);
+  const [filteredBoxes, setFilteredBoxes] = useState<Box[]>([]);
 
   const { setLoading, setSuccess, setFailure } = useActions();
   const { tokenBalances } = useTypedSelector((state) => state.wallet);
   const { boxes } = useTypedSelector((state) => state.farm);
 
-  const pageArr = Array.from({ length: Math.ceil(boxes.length / PLANTS_PER_PAGE) }, (_, i) => i + 1);
+  const pageArr = Array.from({ length: Math.ceil(filteredBoxes.length / PLANTS_PER_PAGE) }, (_, i) => i + 1);
 
   useEffect(() => {
     if (page < start + 1) {
@@ -43,6 +45,32 @@ const Farm = () => {
     }
   }, [page, setStart, setEnd, start, end]);
 
+  useEffect(() => {
+    setPage(1); // Safe-hatch for decrease in items
+    switch (filterOption) {
+      case 0: {
+        // All
+        setFilteredBoxes(boxes);
+        break;
+      }
+      case 1: {
+        // Alive
+        setFilteredBoxes(boxes.filter((box) => box.stage !== BoxStage.DEAD));
+        break;
+      }
+      case 2: {
+        // Needs water
+        setFilteredBoxes(boxes.filter((box) => box.needsWater && box.stage !== BoxStage.STAGE_6));
+        break;
+      }
+      case 3: {
+        // Harvestable
+        setFilteredBoxes(boxes.filter((box) => box.stage === BoxStage.STAGE_6));
+        break;
+      }
+    }
+  }, [filterOption, boxes]);
+
   const handlePlantSeeds = async () => {
     const maxBoxes = Math.floor(parseInt(tokenBalances.SEED) / seedsPerBox);
     if (maxBoxes === 0) {
@@ -50,7 +78,7 @@ const Farm = () => {
     }
 
     try {
-      const op = await plantSeeds(5);
+      const op = await plantSeeds(maxBoxes);
       if (op) {
         setLoading("Planting seeds");
         await (await op.send()).confirmation(1);
@@ -123,9 +151,25 @@ const Farm = () => {
   return (
     <div className="font-secondary flex flex-col gap-y-6 xl:w-10/12 m-auto">
       <div className="rounded-lg bg-white p-6">
-        <div className="font-primary font-semibold text-fadedBlack text-xl">Planted Boxes</div>
-        <div className="mt-4 grid grid-cols-2 md:grid-cols-5 gap-y-2">
-          {boxes.slice((page - 1) * PLANTS_PER_PAGE, page * PLANTS_PER_PAGE).map((box, index) => (
+        <div className="flex justify-between items-center">
+          <div className="font-primary font-semibold text-fadedBlack text-xl">Plant Boxes</div>
+          <div
+            onClick={() => setFilterOption((filterOption + 1) % 4)}
+            className="py-1 px-6 rounded-full bg-fadedWhite font-medium text-lg cursor-pointer hover:opacity-75 transition-opacity duration-200"
+          >
+            {filterOption === 0
+              ? "All Boxes"
+              : filterOption === 1
+              ? "Alive Boxes"
+              : filterOption === 2
+              ? "Needs Water"
+              : "Harvestable"}
+            <i className="bi bi-arrow-repeat ml-2" />
+          </div>
+        </div>
+        {filteredBoxes.length === 0 && <div className="text-center">Nothing to show.</div>}
+        <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-y-2">
+          {filteredBoxes.slice((page - 1) * PLANTS_PER_PAGE, page * PLANTS_PER_PAGE).map((box, index) => (
             <div key={index} className="relative m-auto w-5/6 cursor-pointer pb-6">
               {getOverlay(box)}
               <img
@@ -136,26 +180,70 @@ const Farm = () => {
             </div>
           ))}
         </div>
-        <div className="flex justify-center items-center mt-12">
-          <i onClick={() => setPage(Math.max(1, page - 1))} className="bi bi-caret-left-fill cursor-pointer text-lg" />
-          {pageArr.slice(start, end).map((i, index) => (
-            <div
-              key={index}
-              onClick={() => setPage(i)}
-              className={`rounded-lg cursor-pointer ${
-                page === i ? "bg-black text-white" : "text-fadedBlack"
-              } text-lg py-1.5 px-2.5 mx-1`}
-            >
-              {i}
-            </div>
-          ))}
-          <i
-            onClick={() => setPage(Math.min(pageArr.length, page + 1))}
-            className="bi bi-caret-right-fill cursor-pointer text-lg"
-          />
-        </div>
+        {filteredBoxes.length !== 0 && (
+          <div className="flex justify-center items-center mt-12">
+            <i
+              onClick={() => setPage(Math.max(1, page - 1))}
+              className="bi bi-caret-left-fill cursor-pointer text-lg"
+            />
+            {pageArr.slice(start, end).map((i, index) => (
+              <div
+                key={index}
+                onClick={() => setPage(i)}
+                className={`rounded-lg cursor-pointer ${
+                  page === i ? "bg-black text-white" : "text-fadedBlack"
+                } text-lg py-1.5 px-2.5 mx-1`}
+              >
+                {i}
+              </div>
+            ))}
+            <i
+              onClick={() => setPage(Math.min(pageArr.length, page + 1))}
+              className="bi bi-caret-right-fill cursor-pointer text-lg"
+            />
+          </div>
+        )}
       </div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="flex flex-col rounded-lg bg-white p-6">
+          <div className="font-primary font-semibold text-fadedBlack text-xl">Stats</div>
+          <div className="flex-1 flex flex-col justify-evenly text-base">
+            <div className="flex justify-between">
+              <span>🌰 Seeds / Box</span>
+              <span>{(seedsPerBox / 10 ** 18).toFixed()} SEED</span>
+            </div>
+            <div className="flex justify-between">
+              <span>⏰ Watering Period</span>
+              <span>{(waterPeriod / 60000).toFixed()} Minutes</span>
+            </div>
+            <div className="flex justify-between">
+              <span>📦 Alive Boxes</span>
+              <span>{boxes.filter((box) => box.stage !== BoxStage.DEAD).length} Boxes</span>
+            </div>
+            <div className="flex justify-between">
+              <span>💧 Needs Water</span>
+              <span>{boxes.filter((box) => box.needsWater && box.stage !== BoxStage.STAGE_6).length} Boxes</span>
+            </div>
+            {boxes.filter((box) => box.waterBy !== 0 && box.stage !== BoxStage.STAGE_6).length !== 0 && (
+              <div className="flex justify-between">
+                <span>🚰 Next Watering by</span>
+                <span>
+                  {getHHMMString(
+                    Math.min(
+                      ...boxes
+                        .filter((box) => box.waterBy !== 0 && box.stage !== BoxStage.STAGE_6)
+                        .map((box) => box.waterBy)
+                    )
+                  )}
+                </span>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span>🪴 Harvestable</span>
+              <span>{boxes.filter((box) => box.stage === BoxStage.STAGE_6).length} Boxes</span>
+            </div>
+          </div>
+        </div>
         <div className="flex flex-col justify-between rounded-lg bg-white p-6">
           <div className="font-primary font-semibold text-fadedBlack text-xl">Water All</div>
           <div className="mx-auto">

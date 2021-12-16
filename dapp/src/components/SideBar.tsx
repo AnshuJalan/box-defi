@@ -8,7 +8,7 @@ import { formatAddress } from "../utils/strings";
 import { explorerURL } from "../utils/global";
 
 // Assets
-import brand from "../assets/images/brand.png";
+import Brand from "../assets/images/brand_alt.png";
 
 // Local components
 const SelectedNotch = <div className="absolute w-1.5 rounded-tr-xl rounded-br-xl h-full left-0 bg-blue-400" />;
@@ -31,12 +31,14 @@ const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
     >
       <div className="text-center">
         {/* Brand */}
-        <img className="w-20 mb-5 mx-auto" alt="brand" src={brand} />
-        <h1 className="font-primary font-bold text-3xl">Box DeFi</h1>
+        <img className="w-16 mb-3 mx-auto" alt="brand" src={Brand} />
+        <h1 className="font-primary font-bold text-3xl">
+          <span style={{ color: "#FF9A00" }}>Box</span> Defi
+        </h1>
         {/* Conditional user Pkh */}
         {accountPkh && (
           <a href={`${explorerURL}/${accountPkh}`} rel="noreferrer" target="_blank">
-            <div className="flex justify-center items-center text-fadedBlack mt-2 text-sm cursor-pointer hover:opacity-70">
+            <div className="flex justify-center items-center text-fadedBlack mt-4 text-sm cursor-pointer hover:opacity-70">
               <i className="bi bi-person-fill mr-1"></i>
               <span>{formatAddress(accountPkh)}</span>
             </div>
@@ -53,7 +55,7 @@ const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           <Link to="/pool">
             <div className={`pl-14 relative mt-6 ${path === "/pool" && "font-semibold"}`}>
               {path === "/pool" && SelectedNotch}
-              {"🌊  Box Pool"}
+              {"🌊  Seed Pool"}
             </div>
           </Link>
           <Link to="farm">
@@ -71,7 +73,7 @@ const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           <Link to="/magical">
             <div className={`pl-14 relative mt-6 ${path === "/magical" && "font-semibold"}`}>
               {path === "/magical" && SelectedNotch}
-              {"🦄  Magical Box"}
+              {"🧑‍🍳  Fruit Chef"}
             </div>
           </Link>
         </div>

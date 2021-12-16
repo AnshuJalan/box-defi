@@ -1,5 +1,5 @@
 // ENV
-export const rpcNode = process.env.REACT_APP_RPC_NODE || "https://hangzhounet.smartpy.io";
+export const rpcNode = process.env.REACT_APP_RPC_NODE || "https://hangzhounet.api.tez.ie/";
 export const network = process.env.REACT_APP_NETWORK || "hangzhounet";
 export const explorerURL = process.env.REACT_APP_EXPLORER_URL || "https://hangzhou2net.tzkt.io";
 export const apiURL = process.env.REACT_APP_API_URL || "https://api.hangzhou2net.tzkt.io/v1";
