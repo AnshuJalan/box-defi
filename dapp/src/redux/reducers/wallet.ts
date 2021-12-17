@@ -1,6 +1,9 @@
 import { Reducer } from "redux";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 
+// Utils
+import { Fruits } from "../../utils/global";
+
 // Actions and types
 import { WalletAction } from "../actions";
 import * as t from "../types";
@@ -14,11 +17,7 @@ interface WalletState {
     SEED: string;
   };
   fruitBalances: {
-    elderGrape: string;
-    mangrot: string;
-    spotBerry: string;
-    blueStripe: string;
-    crownApple: string;
+    [key in keyof typeof Fruits]: string;
   };
 }
 
@@ -31,11 +30,11 @@ const initialState: WalletState = {
     SEED: "0",
   },
   fruitBalances: {
-    elderGrape: "0",
-    mangrot: "0",
-    spotBerry: "0",
-    blueStripe: "0",
-    crownApple: "0",
+    [Fruits.ELDER_GRAPE]: "0",
+    [Fruits.MANGROT]: "0",
+    [Fruits.SPOT_BERRY]: "0",
+    [Fruits.BLUE_STRIPE]: "0",
+    [Fruits.CROWN_APPLE]: "0",
   },
 };
 

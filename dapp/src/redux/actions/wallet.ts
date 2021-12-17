@@ -1,4 +1,5 @@
 import { BeaconWallet } from "@taquito/beacon-wallet";
+import { Fruits } from "../../utils/global";
 import * as t from "../types";
 
 export interface ConnectWalletAction {
@@ -18,11 +19,7 @@ export interface GetBalancesAction {
       SEED: string;
     };
     fruitBalances: {
-      elderGrape: string;
-      mangrot: string;
-      spotBerry: string;
-      blueStripe: string;
-      crownApple: string;
+      [key in keyof typeof Fruits]: string;
     };
   };
 }

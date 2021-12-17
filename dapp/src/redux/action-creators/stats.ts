@@ -4,7 +4,7 @@ import { Dispatch } from "react";
 import { getFA12Balance, getFA12TotalSupply, getFA2TotalSupply } from "../../api";
 
 // Utils
-import { kUSDAddress, seedAddress, boxFarmAddress, boxPoolAddress, boxFruitAddress } from "../../utils/global";
+import { Fruits, kUSDAddress, seedAddress, boxFarmAddress, boxPoolAddress, boxFruitAddress } from "../../utils/global";
 
 // Types and actions
 import { StatsAction } from "../actions";
@@ -29,11 +29,11 @@ export const loadStats = () => async (dispatch: Dispatch<StatsAction>) => {
         seedsPlanted,
         kUSDLocked,
         fruitsHarvested: {
-          elderGrape,
-          mangrot,
-          spotBerry,
-          blueStripe,
-          crownApple,
+          [Fruits.ELDER_GRAPE]: elderGrape,
+          [Fruits.MANGROT]: mangrot,
+          [Fruits.SPOT_BERRY]: spotBerry,
+          [Fruits.BLUE_STRIPE]: blueStripe,
+          [Fruits.CROWN_APPLE]: crownApple,
         },
       },
     });

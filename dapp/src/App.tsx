@@ -13,6 +13,7 @@ import Loader from "./components/Loader";
 import Dashboard from "./pages/Dashboard";
 import Pool from "./pages/Pool";
 import Farm from "./pages/Farm";
+import Basket from "./pages/Basket";
 
 const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -70,6 +71,7 @@ const App = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/pool" element={<Pool />} />
               <Route path="/farm" element={<Farm />} />
+              <Route path="/basket" element={<Basket />} />
             </Routes>
           </div>
         </div>

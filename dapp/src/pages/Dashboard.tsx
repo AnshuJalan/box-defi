@@ -51,23 +51,23 @@ const Dashboard = () => {
         <div className="font-semibold  grid grid-cols-1 md:grid-cols-5 gap-y-6">
           <div className="flex flex-col items-center">
             <img className="w-6/12 md:w-8/12" alt="fruit" src={ElderGrape} />
-            <div className="text-2xl mt-4">{fruitsHarvested.elderGrape}</div>
+            <div className="text-2xl mt-4">{fruitsHarvested.ELDER_GRAPE}</div>
           </div>
           <div className="flex flex-col items-center">
             <img className="w-6/12 md:w-8/12" alt="fruit" src={Mangrot} />
-            <div className="text-2xl mt-4">{fruitsHarvested.mangrot}</div>
+            <div className="text-2xl mt-4">{fruitsHarvested.MANGROT}</div>
           </div>
           <div className="flex flex-col items-center">
             <img className="w-6/12 md:w-8/12" alt="fruit" src={SpotBerry} />
-            <div className="text-2xl mt-4">{fruitsHarvested.spotBerry}</div>
+            <div className="text-2xl mt-4">{fruitsHarvested.SPOT_BERRY}</div>
           </div>
           <div className="flex flex-col items-center">
             <img className="w-6/12 md:w-8/12" alt="fruit" src={BlueStripe} />
-            <div className="text-2xl mt-4">{fruitsHarvested.blueStripe}</div>
+            <div className="text-2xl mt-4">{fruitsHarvested.BLUE_STRIPE}</div>
           </div>
           <div className="flex flex-col items-center">
             <img className="w-6/12 md:w-8/12" alt="fruit" src={CrownApple} />
-            <div className="text-2xl mt-4">{fruitsHarvested.crownApple}</div>
+            <div className="text-2xl mt-4">{fruitsHarvested.CROWN_APPLE}</div>
           </div>
         </div>
       </div>

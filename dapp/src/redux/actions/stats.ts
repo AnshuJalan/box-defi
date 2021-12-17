@@ -1,4 +1,5 @@
 import * as t from "../types";
+import { Fruits } from "../../utils/global";
 
 export interface LoadStatsAction {
   type: t.StatsActionTypes.LOAD_STATS;
@@ -7,11 +8,7 @@ export interface LoadStatsAction {
     seedsPlanted: string;
     kUSDLocked: string;
     fruitsHarvested: {
-      elderGrape: string;
-      mangrot: string;
-      spotBerry: string;
-      blueStripe: string;
-      crownApple: string;
+      [key in keyof typeof Fruits]: string;
     };
   };
 }

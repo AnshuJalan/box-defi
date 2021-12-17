@@ -10,7 +10,7 @@ import * as t from "../types";
 import { getFA12Balance, getFA2Balance } from "../../api";
 
 // Globals
-import { network, kUSDAddress, seedAddress, boxFruitAddress } from "../../utils/global";
+import { Fruits, network, kUSDAddress, seedAddress, boxFruitAddress } from "../../utils/global";
 
 import { RootState } from "../reducers";
 
@@ -72,11 +72,11 @@ export const getBalances = () => async (dispatch: Dispatch<WalletAction>, getSta
         SEED,
       },
       fruitBalances: {
-        elderGrape,
-        mangrot,
-        spotBerry,
-        blueStripe,
-        crownApple,
+        [Fruits.ELDER_GRAPE]: elderGrape,
+        [Fruits.MANGROT]: mangrot,
+        [Fruits.SPOT_BERRY]: spotBerry,
+        [Fruits.BLUE_STRIPE]: blueStripe,
+        [Fruits.CROWN_APPLE]: crownApple,
       },
     },
   });

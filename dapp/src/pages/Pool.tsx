@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Button from "../components/Button";
 
 // Data
-import data from "../data/index.json";
+import { info } from "../data";
 
 // Hooks
 import { useActions, useTypedSelector } from "../hooks";
@@ -167,7 +167,7 @@ const Pool = () => {
         </div>
         <div className="mt-8 rounded-lg bg-gray-200 p-3 md:w-10/12 m-auto">
           <i className="bi bi-info-circle mr-1" />
-          {data.poolInfo}
+          {info.pool}
         </div>
       </div>
     </div>

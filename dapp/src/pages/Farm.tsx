@@ -149,7 +149,7 @@ const Farm = () => {
   };
 
   return (
-    <div className="font-secondary flex flex-col gap-y-6 xl:w-10/12 m-auto">
+    <div className="font-secondary flex flex-col gap-y-6 2xl:w-10/12 m-auto">
       <div className="rounded-lg bg-white p-6">
         <div className="flex justify-between items-center">
           <div className="font-primary font-semibold text-fadedBlack text-xl">Plant Boxes</div>

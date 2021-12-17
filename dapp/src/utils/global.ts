@@ -13,3 +13,12 @@ export const boxFarmAddress = process.env.REACT_APP_BOX_FARM_ADDRESS || "KT19crj
 // General constants
 export const seedsPerBox = 10 * 10 ** 18;
 export const waterPeriod = 300 * 1000; // Milliseconds
+
+// Fruits enum
+export enum Fruits {
+  ELDER_GRAPE = "ELDER_GRAPE",
+  MANGROT = "MANGROT",
+  SPOT_BERRY = "SPOT_BERRY",
+  BLUE_STRIPE = "BLUE_STRIPE",
+  CROWN_APPLE = "CROWN_APPLE",
+}

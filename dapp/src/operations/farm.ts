@@ -81,3 +81,16 @@ export const harvest = async (boxId: number): Promise<ContractMethod<Wallet> | u
     throw err;
   }
 };
+
+export const deseed = async (tokenId: number, amount: number): Promise<ContractMethod<Wallet> | undefined> => {
+  const { boxFarmContract } = store.getState().contract;
+
+  if (!boxFarmContract) return;
+
+  try {
+    const op = await boxFarmContract.methods.deseed([{ token_id: tokenId, amount }]);
+    return op;
+  } catch (err) {
+    throw err;
+  }
+};
