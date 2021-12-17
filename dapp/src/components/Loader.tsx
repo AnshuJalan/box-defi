@@ -9,6 +9,7 @@ import { Status } from "../redux/reducers/loader";
 // Assets
 import Growing from "../assets/images/growing.gif";
 import Deseeding from "../assets/images/knife_deseed.gif";
+import Wizard from "../assets/images/wizard.gif";
 import Watering from "../assets/images/watering.gif";
 
 const Loader = () => {
@@ -32,6 +33,8 @@ const Loader = () => {
                 ? Watering
                 : text.toLowerCase().includes("deseeding")
                 ? Deseeding
+                : text.toLowerCase().includes("forging")
+                ? Wizard
                 : Growing
             }
           />

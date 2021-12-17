@@ -3,4 +3,6 @@ export const info: { [key: string]: string } = {
   waterAll: "Water all boxes together to save gas and time.",
   deseed:
     "You can de-seed your fruits and get back your original 10 seeds per fruit. Your FRUIT tokens will be burnt and the SEED tokens will be credited into your wallet.",
+  wizard:
+    "The Fruit Wizard can take your less rarer fruits and forge more rarer ones instantly. Your less rare FRUIT tokens will be burnt and the new token will be credited into your wallet.",
 };

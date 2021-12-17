@@ -55,7 +55,7 @@ const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           <Link to="/pool">
             <div className={`pl-14 relative mt-6 ${path === "/pool" && "font-semibold"}`}>
               {path === "/pool" && SelectedNotch}
-              {"🌊  Seed Pool"}
+              {"🌊  Box Pool"}
             </div>
           </Link>
           <Link to="farm">
@@ -70,10 +70,10 @@ const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
               {"🍎  Fruit Basket"}
             </div>
           </Link>
-          <Link to="/magical">
-            <div className={`pl-14 relative mt-6 ${path === "/magical" && "font-semibold"}`}>
-              {path === "/magical" && SelectedNotch}
-              {"🧑‍🍳  Fruit Chef"}
+          <Link to="/wizard">
+            <div className={`pl-14 relative mt-6 ${path === "/wizard" && "font-semibold"}`}>
+              {path === "/wizard" && SelectedNotch}
+              {"🧙  Fruit Wizard"}
             </div>
           </Link>
         </div>

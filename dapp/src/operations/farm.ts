@@ -94,3 +94,16 @@ export const deseed = async (tokenId: number, amount: number): Promise<ContractM
     throw err;
   }
 };
+
+export const merge = async (tokenId: number): Promise<ContractMethod<Wallet> | undefined> => {
+  const { boxFarmContract } = store.getState().contract;
+
+  if (!boxFarmContract) return;
+
+  try {
+    const op = await boxFarmContract.methods.merge(tokenId);
+    return op;
+  } catch (err) {
+    throw err;
+  }
+};

@@ -12,6 +12,7 @@ import Loader from "./components/Loader";
 // Pages
 import Dashboard from "./pages/Dashboard";
 import Pool from "./pages/Pool";
+import Wizard from "./pages/Wizard";
 import Farm from "./pages/Farm";
 import Basket from "./pages/Basket";
 
@@ -72,6 +73,7 @@ const App = () => {
               <Route path="/pool" element={<Pool />} />
               <Route path="/farm" element={<Farm />} />
               <Route path="/basket" element={<Basket />} />
+              <Route path="/wizard" element={<Wizard />} />
             </Routes>
           </div>
         </div>
