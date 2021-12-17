@@ -26,7 +26,7 @@ const updateKey = async (item) => {
 };
 
 const syncBigMap = async () => {
-  const _res = await axios.get(`${global.tzktAPI}/bigmaps/updates?bigmap=${global.boxesBigMap}`);
+  const _res = await axios.get(`${global.tzktAPI}/bigmaps/updates?bigmap=${global.boxesBigMap}&limit=10000`);
   for (const item of _res.data.slice(1)) {
     await updateKey(item);
   }
