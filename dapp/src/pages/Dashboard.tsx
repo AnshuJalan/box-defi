@@ -14,7 +14,14 @@ import CrownApple from "../assets/images/fruits/crown_apple.png";
 import SpotBerry from "../assets/images/fruits/spot_berry.png";
 
 const Dashboard = () => {
-  const { seedSupply, seedsPlanted, kUSDLocked, fruitsHarvested } = useTypedSelector((state) => state.stats);
+  const { seedSupply, seedsPlanted, kUSDLocked, fruitsHarvested, numBoxes } = useTypedSelector((state) => state.stats);
+
+  const seedSupplyString = formatTokenBalance(seedSupply, 18);
+  const seedsPlantedString = formatTokenBalance(seedsPlanted, 18);
+
+  const fruitsSupply = Object.values(fruitsHarvested)
+    .map((i) => parseInt(i))
+    .reduce((a, b) => a + b);
 
   return (
     <React.Fragment>
@@ -22,27 +29,29 @@ const Dashboard = () => {
       <div className="font-secondary rounded-lg bg-white p-6 grid grid-cols-2 md:grid-cols-3 gap-y-6">
         <div className="flex flex-col items-center">
           <div className="font-medium text-fadedBlack text-base md:text-xl mb-1">🌰 Seed Supply</div>
-          <div className="font-semibold text-2xl">{formatTokenBalance(seedSupply, 18)}</div>
+          <div className="font-semibold text-2xl">{seedSupplyString}</div>
         </div>
         <div className="flex flex-col items-center">
           <div className="font-medium text-fadedBlack text-base md:text-xl mb-1">🪴 Seeds Planted</div>
-          <div className="font-semibold text-2xl">{formatTokenBalance(seedsPlanted, 18)}</div>
+          <div className="font-semibold text-2xl">{seedsPlantedString}</div>
         </div>
         <div className="flex flex-col items-center">
           <div className="font-medium text-fadedBlack text-base md:text-xl mb-1">💧 Seeds Circulating</div>
-          <div className="font-semibold text-2xl">1000</div>
+          <div className="font-semibold text-2xl">
+            {(parseFloat(seedSupplyString) - parseFloat(seedsPlantedString)).toString()}
+          </div>
         </div>
         <div className="flex flex-col items-center">
           <div className="font-medium text-fadedBlack text-base md:text-xl mb-1">🔒 Pool TVL</div>
           <div className="font-semibold text-2xl">{formatTokenBalance(kUSDLocked, 18)} kUSD</div>
         </div>
         <div className="flex flex-col items-center">
-          <div className="font-medium text-fadedBlack text-base md:text-xl mb-1">📦 Alive Boxes</div>
-          <div className="font-semibold text-2xl">53,450</div>
+          <div className="font-medium text-fadedBlack text-base md:text-xl mb-1">📦 All Boxes</div>
+          <div className="font-semibold text-2xl">{numBoxes}</div>
         </div>
         <div className="flex flex-col items-center">
           <div className="font-medium text-fadedBlack text-base md:text-xl mb-1">🍇 Total Fruits</div>
-          <div className="font-semibold text-2xl">525</div>
+          <div className="font-semibold text-2xl">{fruitsSupply}</div>
         </div>
       </div>
       {/* Fruits stats */}

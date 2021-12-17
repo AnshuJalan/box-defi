@@ -12,6 +12,7 @@ import { useActions, useTypedSelector } from "../hooks";
 // Utils
 import { divide, multiply } from "../utils/math";
 import { formatTokenBalance } from "../utils/strings";
+import { blockInvalidChars } from "../utils/input";
 
 // Operations
 import { lockTokens, unlockTokens } from "../operations/pool";
@@ -24,6 +25,7 @@ const Pool = () => {
   const [selected, setSelected] = useState<number>(0);
   const [kUSDValue, setkUSDValue] = useState<string>("");
   const [seedValue, setSeedValue] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const { setLoading, setSuccess, setFailure } = useActions();
 
@@ -41,6 +43,20 @@ const Pool = () => {
   }, [kUSDValue, seedValue, kUSDLocked, seedSupply, selected]);
 
   const submit = async () => {
+    // Input validation
+    setError("");
+    if (selected === 0) {
+      if (parseFloat(kUSDValue) > parseFloat(divide(tokenBalances.kUSD, 10 ** 18)) || kUSDValue === "0") {
+        setError("Invalid kUSD amount!");
+        return;
+      }
+    } else {
+      if (parseFloat(seedValue) > parseFloat(divide(tokenBalances.SEED, 10 ** 18)) || seedValue === "0") {
+        setError("Invalid SEED amount!");
+        return;
+      }
+    }
+
     if (selected === 0) {
       try {
         const op = await lockTokens(kUSDValue);
@@ -75,6 +91,7 @@ const Pool = () => {
       <input
         type="number"
         value={kUSDValue}
+        onKeyDown={blockInvalidChars(["-", "+", "e", "E"])}
         onChange={(e) => setkUSDValue(e.target.value)}
         className="min-w-0 w-2/4 flex-grow rounded-tr-lg rounded-br-lg bg-fadedWhite focus:outline-none text-xl px-2"
         placeholder={selected === 0 ? "0.00" : "kUSD received (Approx)"}
@@ -100,6 +117,7 @@ const Pool = () => {
       <input
         type="number"
         value={seedValue}
+        onKeyDown={blockInvalidChars(["-", "+", "e", "E"])}
         onChange={(e) => setSeedValue(e.target.value)}
         className="min-w-0 w-2/4 flex-grow rounded-tr-lg rounded-br-lg bg-fadedWhite focus:outline-none text-xl px-2"
         placeholder={selected === 1 ? "0.00" : "SEED received (Approx)"}
@@ -152,6 +170,12 @@ const Pool = () => {
           </div>
         </div>
         <div className="mt-8 flex flex-col items-center gap-y-4">
+          {error && (
+            <div className="md:w-3/4 m-auto text-left text-base text-red-500 -mb-3">
+              <i className="bi bi-exclamation-circle mr-2" />
+              {error}
+            </div>
+          )}
           <React.Fragment>
             {selected === 0 ? kUSDInput : SEEDInput}
             <i className="bi bi-arrow-down-circle-fill text-blue-500 text-xl" />

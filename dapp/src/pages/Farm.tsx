@@ -33,7 +33,10 @@ const Farm = () => {
   const { tokenBalances } = useTypedSelector((state) => state.wallet);
   const { boxes } = useTypedSelector((state) => state.farm);
 
+  // TODO: memoize
   const pageArr = Array.from({ length: Math.ceil(filteredBoxes.length / PLANTS_PER_PAGE) }, (_, i) => i + 1);
+  const numNeedsWater = boxes.filter((box) => box.needsWater && box.stage !== BoxStage.STAGE_6).length;
+  const maxBoxes = Math.floor(parseInt(tokenBalances.SEED) / seedsPerBox);
 
   useEffect(() => {
     if (page < start + 1) {
@@ -72,11 +75,6 @@ const Farm = () => {
   }, [filterOption, boxes]);
 
   const handlePlantSeeds = async () => {
-    const maxBoxes = Math.floor(parseInt(tokenBalances.SEED) / seedsPerBox);
-    if (maxBoxes === 0) {
-      return;
-    }
-
     try {
       const op = await plantSeeds(maxBoxes);
       if (op) {
@@ -222,7 +220,7 @@ const Farm = () => {
             </div>
             <div className="flex justify-between">
               <span>💧 Needs Water</span>
-              <span>{boxes.filter((box) => box.needsWater && box.stage !== BoxStage.STAGE_6).length} Boxes</span>
+              <span>{numNeedsWater} Boxes</span>
             </div>
             {boxes.filter((box) => box.waterBy !== 0 && box.stage !== BoxStage.STAGE_6).length !== 0 && (
               <div className="flex justify-between">
@@ -254,6 +252,7 @@ const Farm = () => {
                 textColor="text-white"
                 background="bg-blue-400"
                 icon="droplet"
+                disabled={numNeedsWater === 0}
                 onClick={() => handleWaterPlants(boxes.filter((box) => box.needsWater).map((box) => box.key))}
               />
             </div>
@@ -269,6 +268,7 @@ const Farm = () => {
                 textColor="text-white"
                 background="bg-green-500"
                 icon="flower3"
+                disabled={maxBoxes === 0}
                 onClick={handlePlantSeeds}
               />
             </div>

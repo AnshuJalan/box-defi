@@ -11,6 +11,7 @@ interface StatsState {
   seedSupply: string;
   seedsPlanted: string;
   kUSDLocked: string;
+  numBoxes: string;
   fruitsHarvested: {
     [key in keyof typeof Fruits]: string;
   };
@@ -20,6 +21,7 @@ const initialState: StatsState = {
   seedSupply: "0",
   seedsPlanted: "0",
   kUSDLocked: "0",
+  numBoxes: "0",
   fruitsHarvested: {
     [Fruits.ELDER_GRAPE]: "0",
     [Fruits.MANGROT]: "0",

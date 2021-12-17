@@ -5,6 +5,7 @@ import { fruits, info } from "../data";
 
 // Types
 import { Fruits } from "../utils/global";
+import { blockInvalidChars } from "../utils/input";
 
 // Operations
 import { deseed } from "../operations/farm";
@@ -29,6 +30,7 @@ const ID_TO_FRUIT: { [key: number]: Fruits } = {
 const Basket = () => {
   const [selectedFruit, setSelectedFruit] = useState<number>(0);
   const [deseedValue, setDeseedValue] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const { setLoading, setSuccess, setFailure } = useActions();
 
@@ -42,9 +44,17 @@ const Basket = () => {
       setSelectedFruit(selectedFruit === 0 ? 4 : selectedFruit - 1);
     }
     setDeseedValue("");
+    setError("");
   };
 
   const handleDeseed = async () => {
+    // Validations
+    setError("");
+    if (deseedValue === "0" || parseInt(deseedValue) > parseInt(fruitBalances[ID_TO_FRUIT[selectedFruit]])) {
+      setError("Invalid value!");
+      return;
+    }
+
     try {
       const op = await deseed(selectedFruit + 1, parseInt(deseedValue));
       if (op) {
@@ -95,36 +105,45 @@ const Basket = () => {
         <i className="bi bi-info-circle mr-1" />
         {info.deseed}
       </div>
-      <div className="flex items-center rounded-lg bg-fadedWhite mt-8 md:w-10/12 m-auto">
-        <div
-          className={`flex items-center p-2 rounded-tl-lg rounded-bl-lg bg-bg${fruits[ID_TO_FRUIT[selectedFruit]].name
-            .split(" ")
-            .join("")}`}
-        >
-          <img className="w-7" alt="kUSD" src={SEED} />
-          <span className="text-lg font-semibold ml-2">DESEED</span>
+      <div className="mt-8">
+        {error && (
+          <div className="md:w-10/12 m-auto text-left text-base text-red-500">
+            <i className="bi bi-exclamation-circle mr-2" />
+            {error}
+          </div>
+        )}
+        <div className="flex items-center rounded-lg bg-fadedWhite md:w-10/12 m-auto">
+          <div
+            className={`flex items-center p-2 rounded-tl-lg rounded-bl-lg bg-bg${fruits[ID_TO_FRUIT[selectedFruit]].name
+              .split(" ")
+              .join("")}`}
+          >
+            <img className="w-7" alt="kUSD" src={SEED} />
+            <span className="text-lg font-semibold ml-2">DESEED</span>
+          </div>
+          <input
+            type="number"
+            value={deseedValue}
+            onKeyDown={blockInvalidChars(["-", "+", "e", "E", "."])}
+            onChange={(e) => setDeseedValue(e.target.value)}
+            className="min-w-0 w-2/4 flex-grow rounded-tr-lg rounded-br-lg bg-fadedWhite focus:outline-none text-xl px-2"
+            placeholder="0"
+          />
+          <span
+            onClick={() => setDeseedValue(fruitBalances[ID_TO_FRUIT[selectedFruit]])}
+            className="text-base font-semibold text-fadedBlack opacity-70 hover:opacity-100 mr-2 cursor-pointer"
+          >
+            MAX
+          </span>
         </div>
-        <input
-          type="number"
-          value={deseedValue}
-          onChange={(e) => setDeseedValue(e.target.value)}
-          className="min-w-0 w-2/4 flex-grow rounded-tr-lg rounded-br-lg bg-fadedWhite focus:outline-none text-xl px-2"
-          placeholder="0"
-        />
-        <span
-          onClick={() => setDeseedValue(fruitBalances[ID_TO_FRUIT[selectedFruit]])}
-          className="text-base font-semibold text-fadedBlack opacity-70 hover:opacity-100 mr-2 cursor-pointer"
-        >
-          MAX
-        </span>
-      </div>
-      <div className="flex justify-center mt-8">
-        <Button
-          text="De-seed"
-          icon="flower1"
-          background={`bg-bg${fruits[ID_TO_FRUIT[selectedFruit]].name.split(" ").join("")}`}
-          onClick={handleDeseed}
-        />
+        <div className="flex justify-center mt-8">
+          <Button
+            text="De-seed"
+            icon="flower1"
+            background={`bg-bg${fruits[ID_TO_FRUIT[selectedFruit]].name.split(" ").join("")}`}
+            onClick={handleDeseed}
+          />
+        </div>
       </div>
     </div>
   );

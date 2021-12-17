@@ -1,10 +1,19 @@
+import axios from "axios";
 import { Dispatch } from "react";
 
 // API
 import { getFA12Balance, getFA12TotalSupply, getFA2TotalSupply } from "../../api";
 
 // Utils
-import { Fruits, kUSDAddress, seedAddress, boxFarmAddress, boxPoolAddress, boxFruitAddress } from "../../utils/global";
+import {
+  Fruits,
+  kUSDAddress,
+  seedAddress,
+  boxFarmAddress,
+  boxPoolAddress,
+  boxFruitAddress,
+  indexerAPI,
+} from "../../utils/global";
 
 // Types and actions
 import { StatsAction } from "../actions";
@@ -22,12 +31,17 @@ export const loadStats = () => async (dispatch: Dispatch<StatsAction>) => {
     const blueStripe = await getFA2TotalSupply(boxFruitAddress, "4");
     const crownApple = await getFA2TotalSupply(boxFruitAddress, "5");
 
+    const {
+      data: { numBoxes },
+    } = await axios.get(`${indexerAPI}/boxes`);
+
     dispatch({
       type: t.StatsActionTypes.LOAD_STATS,
       payload: {
         seedSupply,
         seedsPlanted,
         kUSDLocked,
+        numBoxes,
         fruitsHarvested: {
           [Fruits.ELDER_GRAPE]: elderGrape,
           [Fruits.MANGROT]: mangrot,

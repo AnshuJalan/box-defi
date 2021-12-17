@@ -7,6 +7,7 @@ export interface LoadStatsAction {
     seedSupply: string;
     seedsPlanted: string;
     kUSDLocked: string;
+    numBoxes: string;
     fruitsHarvested: {
       [key in keyof typeof Fruits]: string;
     };

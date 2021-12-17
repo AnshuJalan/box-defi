@@ -11,6 +11,7 @@ import { formatTokenBalance } from "../utils/strings";
 
 // Assets
 import Seed from "../assets/icons/seed.png";
+import kUSD from "../assets/icons/kUSD.png";
 
 interface HeaderProps {
   setSidebarOpen: (val: boolean) => void;
@@ -28,8 +29,12 @@ const Header: React.FC<HeaderProps> = ({ setSidebarOpen }) => {
         <i onClick={() => setSidebarOpen(true)} className="bi bi-list text-4xl lg:opacity-0"></i>
       </div>
       <div className="flex items-center">
-        {/* Seed balance and wallet*/}
-        <div className="rounded-lg px-3 py-2 bg-white flex items-center mr-4">
+        {/* balances and wallet*/}
+        <div className="rounded-lg hidden px-3 py-2 bg-white md:flex items-center mr-4">
+          <img className="w-7 mr-4" alt="kUSD" src={kUSD} />
+          <span className="text-lg">{formatTokenBalance(tokenBalances.kUSD, 18)}</span>
+        </div>
+        <div className="rounded-lg hidden px-3 py-2 bg-white md:flex items-center mr-4">
           <img className="w-7 mr-4" alt="seed" src={Seed} />
           <span className="text-lg">{formatTokenBalance(tokenBalances.SEED, 18)}</span>
         </div>
