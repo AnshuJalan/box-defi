@@ -16,6 +16,7 @@ import Wizard from "./pages/Wizard";
 import Farm from "./pages/Farm";
 import Basket from "./pages/Basket";
 import Home from "./pages/Home";
+import Faucet from "./pages/Faucet";
 
 const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -77,6 +78,7 @@ const App = () => {
               <Route path="/farm" element={<Farm />} />
               <Route path="/basket" element={<Basket />} />
               <Route path="/wizard" element={<Wizard />} />
+              <Route path="/faucet" element={<Faucet />} />
             </Routes>
           </div>
         </div>

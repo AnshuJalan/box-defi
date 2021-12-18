@@ -35,10 +35,12 @@ const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
     >
       <div className="text-center">
         {/* Brand */}
-        <img className="w-16 mb-3 mx-auto" alt="brand" src={Brand} />
-        <h1 className="font-primary font-bold text-3xl">
-          <span style={{ color: "#FF9A00" }}>Box</span> Defi
-        </h1>
+        <a href="/" target="_blank" rel="noreferrer">
+          <img className="w-16 mb-3 mx-auto" alt="brand" src={Brand} />
+          <h1 className="font-primary font-bold text-3xl">
+            <span style={{ color: "#FF9A00" }}>Box</span> Defi
+          </h1>
+        </a>
         {/* Conditional user Pkh */}
         {accountPkh && (
           <a href={`${explorerURL}/${accountPkh}`} rel="noreferrer" target="_blank">
@@ -78,6 +80,12 @@ const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             <div className={`pl-14 relative mt-6 ${path === "/wizard" && "font-semibold"}`}>
               {path === "/wizard" && SelectedNotch}
               {"🧙  Fruit Wizard"}
+            </div>
+          </Link>
+          <Link to="/faucet">
+            <div className={`pl-14 relative mt-6 ${path === "/faucet" && "font-semibold"}`}>
+              {path === "/faucet" && SelectedNotch}
+              {"#️⃣  Test kUSD Faucet"}
             </div>
           </Link>
         </div>

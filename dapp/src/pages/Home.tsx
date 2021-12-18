@@ -79,7 +79,7 @@ const Home = () => {
           <div className="text-fadedBlack font-semibold font-primary text-xl">FRUIT WIZARD</div>
           <img className="w-1/2" alt="seed" src={Wizard} />
           <div className="font-medium font-secondary text-lg text-center">
-            There's a wizard is Box Land, that can take your less rare FRUIT and forge rarer fruits out of them
+            There's a wizard in Box Land, that can take your less rare FRUIT and forge rarer fruits out of them
             instantly!
           </div>
         </div>

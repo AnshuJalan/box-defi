@@ -10,7 +10,15 @@ import * as t from "../types";
 import { RootState } from "../reducers";
 
 // Utils
-import { kUSDAddress, seedAddress, boxFruitAddress, boxPoolAddress, boxFarmAddress, rpcNode } from "../../utils/global";
+import {
+  kUSDAddress,
+  seedAddress,
+  boxFruitAddress,
+  boxPoolAddress,
+  boxFarmAddress,
+  kUSDFaucetAddress,
+  rpcNode,
+} from "../../utils/global";
 
 export const loadContracts =
   () =>
@@ -26,6 +34,7 @@ export const loadContracts =
       const boxFruitContract = await Tezos.wallet.at(boxFruitAddress);
       const boxPoolContract = await Tezos.wallet.at(boxPoolAddress);
       const boxFarmContract = await Tezos.wallet.at(boxFarmAddress);
+      const kUSDFaucetContract = await Tezos.wallet.at(kUSDFaucetAddress);
 
       dispatch({
         type: t.ContractActionTypes.LOAD_CONTRACTS,
@@ -36,6 +45,7 @@ export const loadContracts =
           boxFruitContract,
           boxPoolContract,
           boxFarmContract,
+          kUSDFaucetContract,
         },
       });
     } catch (err) {

@@ -34,7 +34,7 @@ const Basket = () => {
 
   const { setLoading, setSuccess, setFailure } = useActions();
 
-  const { fruitBalances } = useTypedSelector((state) => state.wallet);
+  const { fruitBalances, isConnected } = useTypedSelector((state) => state.wallet);
   const { fruitsHarvested } = useTypedSelector((state) => state.stats);
 
   const handleFruitChange = (type: "Previous" | "Next") => {
@@ -140,6 +140,7 @@ const Basket = () => {
           <Button
             text="De-seed"
             icon="flower1"
+            disabled={!isConnected}
             background={`bg-bg${fruits[ID_TO_FRUIT[selectedFruit]].name.split(" ").join("")}`}
             onClick={handleDeseed}
           />

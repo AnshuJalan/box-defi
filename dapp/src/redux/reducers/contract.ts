@@ -12,6 +12,7 @@ interface ContractState {
   boxFruitContract: WalletContract | null;
   boxPoolContract: WalletContract | null;
   boxFarmContract: WalletContract | null;
+  kUSDFaucetContract: WalletContract | null;
 }
 
 const initialState: ContractState = {
@@ -21,6 +22,7 @@ const initialState: ContractState = {
   boxFruitContract: null,
   boxPoolContract: null,
   boxFarmContract: null,
+  kUSDFaucetContract: null,
 };
 
 export const contractReducer: Reducer<ContractState, ContractAction> = (

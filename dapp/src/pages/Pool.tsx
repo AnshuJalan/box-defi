@@ -29,7 +29,7 @@ const Pool = () => {
 
   const { setLoading, setSuccess, setFailure } = useActions();
 
-  const { tokenBalances } = useTypedSelector((state) => state.wallet);
+  const { tokenBalances, isConnected } = useTypedSelector((state) => state.wallet);
   const { seedSupply, kUSDLocked } = useTypedSelector((state) => state.stats);
 
   // Recalibrates output value of one tokens w.r.t to the other and operation type
@@ -182,9 +182,21 @@ const Pool = () => {
             {selected === 1 ? kUSDInput : SEEDInput}
             <div className="mt-4">
               {selected === 0 ? (
-                <Button text="Lock Tokens" icon="lock-fill" background="bg-bgGreen2" onClick={submit} />
+                <Button
+                  disabled={!isConnected}
+                  text="Lock Tokens"
+                  icon="lock-fill"
+                  background="bg-bgGreen2"
+                  onClick={submit}
+                />
               ) : (
-                <Button text="Unlock Tokens" icon="unlock-fill" background="bg-bgBrown" onClick={submit} />
+                <Button
+                  disabled={!isConnected}
+                  text="Unlock Tokens"
+                  icon="unlock-fill"
+                  background="bg-bgBrown"
+                  onClick={submit}
+                />
               )}
             </div>
           </React.Fragment>

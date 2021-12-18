@@ -10,5 +10,6 @@ export interface LoadContractsAction {
     boxFruitContract: WalletContract;
     boxPoolContract: WalletContract;
     boxFarmContract: WalletContract;
+    kUSDFaucetContract: WalletContract;
   };
 }
