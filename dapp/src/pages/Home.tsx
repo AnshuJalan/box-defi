@@ -133,7 +133,7 @@ const Home = () => {
             className="absolute top-0 left-0 w-full h-full"
             width="100%"
             height="100%"
-            src="https://www.youtube.com/embed/VFr5crZDBBA"
+            src="https://www.youtube.com/embed/zPnL_2UDKtc"
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -146,9 +146,15 @@ const Home = () => {
           <img className="w-52 m-auto lg:m-0" alt="brand_large" src={BrandLarge} />
         </div>
         <div className="flex items-center text-4xl gap-4">
-          <i className="bi bi-github"></i>
-          <i className="bi bi-twitter"></i>
-          <i className="bi bi-youtube"></i>
+          <a href="https://github.com/AnshuJalan/box-defi" target="_blank" rel="noreferrer">
+            <i className="bi bi-github"></i>
+          </a>
+          <a href="https://twitter.com/aj_jalan" target="_blank" rel="noreferrer">
+            <i className="bi bi-twitter"></i>
+          </a>
+          <a href="https://youtu.be/zPnL_2UDKtc" target="_blank" rel="noreferrer">
+            <i className="bi bi-youtube"></i>
+          </a>
         </div>
         <div className="text-xl text-center">
           💻 Developed by{" "}

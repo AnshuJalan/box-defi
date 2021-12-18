@@ -92,9 +92,15 @@ const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       </div>
       {/* Socials */}
       <div className="flex flex-row justify-evenly px-12 text-2xl">
-        <i className="bi bi-github"></i>
-        <i className="bi bi-twitter"></i>
-        <i className="bi bi-youtube"></i>
+        <a href="https://github.com/AnshuJalan/box-defi" target="_blank" rel="noreferrer">
+          <i className="bi bi-github"></i>
+        </a>
+        <a href="https://twitter.com/aj_jalan" target="_blank" rel="noreferrer">
+          <i className="bi bi-twitter"></i>
+        </a>
+        <a href="https://youtu.be/zPnL_2UDKtc" target="_blank" rel="noreferrer">
+          <i className="bi bi-youtube"></i>
+        </a>
       </div>
     </div>
   );
