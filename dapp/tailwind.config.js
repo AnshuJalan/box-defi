@@ -1,6 +1,11 @@
 // tailwind.config.js
 module.exports = {
-  purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
+  purge: {
+    content: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
+    options: {
+      safelist: ["bg-bgElderGrape", "bg-bgMangrot", "bg-bgSpotBerry", "bg-bgBlueStripe", "bg-bgCrownApple"],
+    },
+  },
   darkMode: false, // or 'media' or 'class'
   theme: {
     fontFamily: {

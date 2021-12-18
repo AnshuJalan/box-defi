@@ -21,7 +21,7 @@ const Home = () => {
           {/* Mobile only background */}
           <div
             style={{ backgroundImage: `url(${Growing})` }}
-            className="lg:hidden bg-contain bg-center bg-no-repeat absolute left-4 w-full h-full opacity-20"
+            className="lg:hidden bg-contain bg-center bg-no-repeat absolute left-4 w-full h-full opacity-10"
           ></div>
           <div className="flex flex-col font-medium text-center lg:text-left justify-center items-center lg:items-start text-4xl lg:text-5xl z-10">
             Experience Defi farming the gamified way on Tezos! Farm unique FRUITs using SEEDs in magical boxes 🪴
