@@ -15,6 +15,7 @@ import Pool from "./pages/Pool";
 import Wizard from "./pages/Wizard";
 import Farm from "./pages/Farm";
 import Basket from "./pages/Basket";
+import Home from "./pages/Home";
 
 const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -55,7 +56,7 @@ const App = () => {
   };
 
   return (
-    <div className="h-full w-full bg-gradient-to-b flex from-bgGreen to-bgBlue">
+    <div className="min-h-screen h-full w-full bg-gradient-to-b flex from-bgGreen to-bgBlue">
       <Router>
         <Loader />
         <SideBar setSidebarOpen={setSidebarOpen} sidebarOpen={sidebarOpen} />
@@ -65,10 +66,12 @@ const App = () => {
           onClick={(e) => checkAndCloseSidebar(e)}
           className={`h-screen w-screen fixed z-10 bg-black bg-opacity-50 ${sidebarOpen ? "block" : "hidden"}`}
         />
-        <div className="flex-1 flex flex-col p-2 md:py-5 md:px-7">
+        {/* TODO: Separate out home/landing page to new repo */}
+        <div className={`flex-1 flex flex-col ${window.location.pathname !== "/" && "p-2 md:py-5 md:px-7"}`}>
           <Header setSidebarOpen={setSidebarOpen} />
-          <div className="flex-1 no-scrollbar overflow-y-scroll">
+          <div className={`flex-1 no-scrollbar overflow-x-hidden overflow-y-scroll`}>
             <Routes>
+              <Route path="/" element={<Home />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/pool" element={<Pool />} />
               <Route path="/farm" element={<Farm />} />

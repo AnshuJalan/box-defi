@@ -1,3 +1,4 @@
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 // Hooks
@@ -22,6 +23,9 @@ const SideBar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const path = useLocation().pathname;
 
   const { accountPkh } = useTypedSelector((state) => state.wallet);
+
+  // TODO: Remove once landing page is separated out to another repo
+  if (path === "/") return <React.Fragment></React.Fragment>;
 
   return (
     <div

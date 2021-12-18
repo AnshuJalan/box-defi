@@ -111,6 +111,7 @@ const Wziard = () => {
         <Button
           text="Forge"
           icon="magic"
+          disabled={isPossibleToMake() === "NO"}
           background={`bg-bg${fruits[ID_TO_FRUIT[selectedFruit]].name.split(" ").join("")}`}
           onClick={handleForge}
         />

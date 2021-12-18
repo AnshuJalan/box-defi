@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 
 // Hooks
 import { useActions, useTypedSelector } from "../hooks";
@@ -21,6 +22,10 @@ const Header: React.FC<HeaderProps> = ({ setSidebarOpen }) => {
   const { connectWallet } = useActions();
 
   const { isConnected, tokenBalances } = useTypedSelector((state) => state.wallet);
+
+  // TODO: Remove once landing page is separated out to another repo
+  const path = useLocation().pathname;
+  if (path === "/") return <React.Fragment></React.Fragment>;
 
   return (
     <div className="flex flex-row justify-between font-secondary font-medium mb-4">

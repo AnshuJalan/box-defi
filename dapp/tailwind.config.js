@@ -13,6 +13,7 @@ module.exports = {
         bgGreen: "#BBEBB7",
         bgGreen2: "#B1E0BB",
         bgBrown: "#E0BB9B",
+        bgOrange: "#FF9A00",
         bgElderGrape: "#8FFCD2",
         bgMangrot: "#0BF7D2",
         bgSpotBerry: "#F14493",
